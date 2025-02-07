@@ -1,0 +1,32 @@
+services:
+    bot:
+        container_name: test-bot
+        restart: unless-stopped
+        build:
+            context: .
+            dockerfile: Dockerfile
+        environment:
+        - NODE_ENV=production
+    postgres:
+            container_name: test-postgres
+            image: postgres:latest
+            restart: unless-stopped
+            environment:
+                - POSTGRES_USER=test
+                - POSTGRES_PASSWORD=Please-change-password
+                - POSTGRES_DB=test
+            volumes:
+                - postgres_data:/var/lib/postgresql/data
+    redis:
+            container_name: test-redis
+            image: redis:latest
+            command: [ "redis-server", "--maxmemory-policy", "noeviction" ]
+            restart: unless-stopped
+            volumes:
+                - redis_data:/data
+volumes:
+    postgres_data:
+    redis_data:
+    
+networks:
+    default: {}
