@@ -1,9 +1,24 @@
+"use client"
+
 import { Button } from "@repo/ui/components/ui/button";
 import { cn } from "@repo/ui/lib/utils";
 import { ArrowUpRight } from "lucide-react";
+import { useMemo } from "react";
 import { RotatingWord } from "~/components/landing/rotating-word";
+import api from "~/lib/api";
 
 export default function Hero() {
+
+  const { data: index, error, isLoading } = api.useQuery(
+    "get",
+    "/",
+  )
+
+  useMemo(() => {
+    console.log(index)
+  }, [index])
+
+
   return (
     <div className={cn(
       "flex justify-center items-center flex-col gap-8",

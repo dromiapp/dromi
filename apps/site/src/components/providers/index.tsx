@@ -1,8 +1,13 @@
+"use client"
 import { ThemeProvider } from "~/components/providers/theme"
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
+
+const queryClient = new QueryClient()
 
 export default function Providers({ children }: React.PropsWithChildren<{}>) {
   return (
     <>
+    <QueryClientProvider client={queryClient}>
       <ThemeProvider
         attribute="class"
         defaultTheme="dark"
@@ -11,6 +16,7 @@ export default function Providers({ children }: React.PropsWithChildren<{}>) {
       >
         {children}
       </ThemeProvider>
+      </QueryClientProvider>
     </>
   )
 }
