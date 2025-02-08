@@ -37,17 +37,16 @@ export const app = new Elysia({
 		}),
 	)
 	// .use(oauth2({}))
-	// .use(cors())
+	.use(
+		cors({
+			credentials: true,
+			origin: ["http://localhost:3001"],
+			allowedHeaders: "*",
+		}),
+	)
 	// .use(jwt({ secret: config.JWT_SECRET }))
 	.derive(userMiddleware)
 	.use(serverTiming())
-	.use(
-		await autoload({
-			types: {
-				output: "../../../packages/eden/routes.ts",
-				typeName: "Routes",
-			},
-		}),
-	);
+	.use(await autoload());
 
 export type ElysiaApp = typeof app;
