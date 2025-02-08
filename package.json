@@ -19,5 +19,8 @@
   "workspaces": [
     "apps/*",
     "packages/*"
+  ],
+  "trustedDependencies": [
+    "@biomejs/biome",
   ]
 }
