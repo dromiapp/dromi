@@ -1,4 +1,8 @@
+"use client"
+import { useScroll } from "motion/react";
+import { useState, useEffect } from "react";
 import CTA from "~/components/landing/cta";
+import FAQ from "~/components/landing/faq";
 import Footer from "~/components/landing/footer";
 import Glow from "~/components/landing/glow";
 import Header from "~/components/landing/header";
@@ -30,12 +34,14 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* TODO: Features, FAQ, Testimonials */}
+      {/* TODO: Features, Testimonials */}
+      <section className="py-12">
+        <FAQ />
+      </section>
 
       <section className="py-12">
         <CTA />
       </section>
-
       <Footer />
     </>
   );
