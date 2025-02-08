@@ -1,44 +1,52 @@
+import { Algorithm, hash, verify } from "@node-rs/argon2";
+import { sha256 } from "@oslojs/crypto/sha2";
+import {
+	encodeBase32LowerCaseNoPadding,
+	encodeHexLowerCase,
+} from "@oslojs/encoding";
 import { prisma } from "@repo/db";
 import type { Session, User } from "@repo/db";
+import { customAlphabet } from "nanoid";
 import { config } from "~/src/config";
-import { encodeBase32LowerCaseNoPadding, encodeHexLowerCase } from "@oslojs/encoding";
-import { sha256 } from "@oslojs/crypto/sha2";
-import { Algorithm, hash } from "@node-rs/argon2";
-import { customAlphabet } from 'nanoid'
 
 export function generateSessionToken(): string {
-  const bytes = new Uint8Array(20);
+	const bytes = new Uint8Array(20);
 	crypto.getRandomValues(bytes);
 	const token = encodeBase32LowerCaseNoPadding(bytes);
 	return token;
 }
 
-export async function createSession(token: string, userId: string): Promise<Session> {
+export async function createSession(
+	token: string,
+	userId: string,
+): Promise<Session> {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
-  const currentDate = Date.now()
+	const currentDate = Date.now();
 	const session: Session = {
-    id: sessionId,
-    userId,
-    expiresAt: new Date(currentDate + 1000 * 60 * 60 * 24 * 30),
-    createdAt: new Date(currentDate)
-  };
+		id: sessionId,
+		userId,
+		expiresAt: new Date(currentDate + 1000 * 60 * 60 * 24 * 30),
+		createdAt: new Date(currentDate),
+	};
 
 	await prisma.session.create({
-		data: session
+		data: session,
 	});
 
 	return session;
 }
 
-export async function validateSessionToken(token: string): Promise<SessionValidationResult> {
+export async function validateSessionToken(
+	token: string,
+): Promise<SessionValidationResult> {
 	const sessionId = encodeHexLowerCase(sha256(new TextEncoder().encode(token)));
 	const result = await prisma.session.findUnique({
 		where: {
-			id: sessionId
+			id: sessionId,
 		},
 		include: {
-			user: true
-		}
+			user: true,
+		},
 	});
 	if (result === null) {
 		return { session: null, user: null };
