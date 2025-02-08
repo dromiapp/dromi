@@ -28,8 +28,14 @@ const navigation = [
 export default function Footer() {
   return (
     <footer className="mt-16 border-t border-white/10 relative">
-      <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8 grid grid-cols-2">
-        <span className="text-xl font-bold">dromi</span>
+      <div className="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8 grid-cols-2 md:grid flex flex-col gap-4">
+        <div className="flex items-start select-none">
+          <div className="flex gap-2 items-center">
+            <img src="/logo.svg" alt="dromi" className="h-4 w-4" />
+            <span className="text-xl font-bold">dromi</span>
+          </div>
+        </div>
+
         <div className="grid grid-cols-1">
           <div className="grid grid-cols-3 gap-8">
             {navigation.map((item) => {

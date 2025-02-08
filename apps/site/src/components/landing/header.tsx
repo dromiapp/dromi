@@ -6,7 +6,7 @@ export default function Header() {
   return (
     <nav className={cn(
       "w-full flex items-center justify-center overflow-hidden relative pt-6 z-[1]",
-      "xl:px-0 px-5"
+      "md:px-0 px-5"
     )}>
       <div className={cn(
         "w-full max-w-screen-xl",
@@ -15,8 +15,9 @@ export default function Header() {
         "py-3 px-5",
         "flex justify-between items-center",
       )}>
-        <div>
+        <div className="flex gap-2 items-center select-none">
           {/* Branding */}
+          <img src="/logo.svg" alt="dromi" className="h-4 w-4" />
           <span className="text-xl font-bold">dromi</span>
         </div>
         <div>
