@@ -3,12 +3,20 @@ import { cors } from "@elysiajs/cors";
 import { jwt } from "@elysiajs/jwt";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
-import { type Context, Elysia } from "elysia";
+import { Elysia } from "elysia";
 import { autoload } from "elysia-autoload";
 import { oauth2 } from "elysia-oauth2";
 import { config } from "~/src/config.ts";
+import { userMiddleware } from "./middlewares/auth-middleware";
 
-export const app = new Elysia()
+export const app = new Elysia({
+	cookie: {
+		domain: config.COOKIE_DOMAIN,
+		secure: config.NODE_ENV === "production",
+		httpOnly: true,
+		sameSite: "lax",
+	},
+})
 	.use(logger())
 	.use(
 		swagger({

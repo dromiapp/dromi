@@ -18,4 +18,5 @@ export const config = {
 		.default("redis")
 		.asEnum(["memory", "redis"]),
 	JWT_SECRET: env.get("JWT_SECRET").required().asString(),
+	COOKIE_DOMAIN: env.get("COOKIE_DOMAIN").default("localhost").asString(),
 };
