@@ -60,14 +60,15 @@ export async function validateSessionToken(
 		session.expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30);
 		await prisma.session.update({
 			where: {
-				id: session.id
+				id: session.id,
 			},
 			data: {
-				expiresAt: session.expiresAt
-			}
+				expiresAt: session.expiresAt,
+			},
 		});
 	}
-	return { session, user };
+	const { password, ...userWithoutPassword } = user;
+	return { session, user: userWithoutPassword };
 }
 
 export async function invalidateSession(sessionId: string): Promise<void> {
@@ -85,6 +86,7 @@ export function hashPassword(password: string): Promise<string> {
   })
 }
 
-export type SessionValidationResult =
-  | { session: Session; user: User }
-  | { session: null; user: null };
+export type SessionValidationResult = {
+	session: Session | null;
+	user: Omit<User, "password"> | null;
+};
