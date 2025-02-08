@@ -75,15 +75,30 @@ export async function invalidateSession(sessionId: string): Promise<void> {
 	await prisma.session.delete({ where: { id: sessionId } });
 }
 
-export const nanoid = customAlphabet('123456789ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnopqrstuvwxyz', 21)
+export const nanoid = customAlphabet(
+	"123456789ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnopqrstuvwxyz",
+	21,
+);
 
 export function hashPassword(password: string): Promise<string> {
-  return hash(password, {
-    algorithm: Algorithm.Argon2id,
-    memoryCost: 19456,
-    timeCost: 2,
-    parallelism: 1
-  })
+	return hash(password, {
+		algorithm: Algorithm.Argon2id,
+		memoryCost: 19456,
+		timeCost: 2,
+		parallelism: 1,
+	});
+}
+
+export function verifyPassword(
+	password: string,
+	hashedPassword: string,
+): Promise<boolean> {
+	return verify(hashedPassword, password, {
+		algorithm: Algorithm.Argon2id,
+		memoryCost: 19456,
+		timeCost: 2,
+		parallelism: 1,
+	});
 }
 
 export type SessionValidationResult = {
