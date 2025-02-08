@@ -1,0 +1,14 @@
+{
+  "name": "@repo/openapi-ts",
+  "version": "0.0.0",
+  "scripts": {
+    "oa:generate": "openapi-typescript http://localhost:3000/docs/json -o ./generated/schema.d.ts"
+  },
+  "devDependencies": {
+    "openapi-typescript": "^7.6.1",
+    "typescript": "^5.7.3"
+  },
+  "exports": {
+    ".": "./generated/schema.d.ts"
+  }
+}

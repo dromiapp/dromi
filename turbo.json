@@ -2,6 +2,10 @@
   "$schema": "https://turbo.build/schema.json",
   "ui": "tui",
   "tasks": {
+    "//#format": {},
+    "//#format:fix": {
+      "cache": false
+    },
     "build": {
       "dependsOn": [
         "^build"
@@ -27,7 +31,10 @@
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "dependsOn": [
+        "^oa:generate"
+      ]
     },
     "db:generate": {
       "cache": false
@@ -37,6 +44,9 @@
       "persistent": true
     },
     "db:deploy": {
+      "cache": false
+    },
+    "oa:generate": {
       "cache": false
     }
   }
