@@ -41,6 +41,13 @@ export const app = new Elysia({
 	// .use(jwt({ secret: config.JWT_SECRET }))
 	.derive(userMiddleware)
 	.use(serverTiming())
-	.use(await autoload());
+	.use(
+		await autoload({
+			types: {
+				output: "../../../packages/eden/routes.ts",
+				typeName: "Routes",
+			},
+		}),
+	);
 
 export type ElysiaApp = typeof app;
