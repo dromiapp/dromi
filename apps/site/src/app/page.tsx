@@ -8,7 +8,7 @@ import Particles from "~/components/landing/particles";
 export default function HomePage() {
   return (
     <>
-      <section className="relative z-[0] h-[100vh]">
+      <section className="relative min-h-[100vh]">
         {/* Content */}
         <Header />
         <Hero />
@@ -32,7 +32,7 @@ export default function HomePage() {
 
       {/* TODO: Features, FAQ, Testimonials */}
 
-      <section className="py-12 overflow-hidden">
+      <section className="py-12">
         <CTA />
       </section>
 
