@@ -21,6 +21,7 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 5.9% 90%;
+    --dromi-primary: 201 100% 40%;
     --input: 240 5.9% 90%;
     --ring: 240 5.9% 10%;
     --radius: 0.5rem;
@@ -32,7 +33,7 @@
   }
 
   .dark {
-    --background: 240 10% 3.9%;
+    --background: 179 100% 0%;
     --foreground: 0 0% 98%;
     --card: 240 10% 3.9%;
     --card-foreground: 0 0% 98%;
@@ -49,6 +50,7 @@
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 3.7% 15.9%;
+    --dromi-primary: 251 82% 55%;
     --input: 240, 10%, 6%;
     --popover: 240, 10%, 6%;
     --ring: 240 4.9% 83.9%;

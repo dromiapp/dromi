@@ -11,6 +11,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        dromi: {
+          primary: "hsl(var(--dromi-primary))",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
