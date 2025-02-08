@@ -39,6 +39,7 @@ export const app = new Elysia({
 	// .use(oauth2({}))
 	// .use(cors())
 	// .use(jwt({ secret: config.JWT_SECRET }))
+	.derive(userMiddleware)
 	.use(serverTiming())
 	.use(await autoload());
 
