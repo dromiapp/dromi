@@ -17,11 +17,13 @@ export default function Header() {
         "py-3 px-5",
         "flex justify-between items-center",
       )}>
-        <div className="flex gap-2 items-center select-none">
-          {/* Branding */}
-          <img src="/logo.svg" alt="dromi" className="h-4 w-4" />
-          <span className="text-xl font-bold">dromi</span>
-        </div>
+        <Link href="/">
+          <div className="flex gap-2 items-center select-none">
+            {/* Branding */}
+            <img src="https://r2.dromi.app/logo.svg" alt="dromi" className="h-4 w-4" />
+            <span className="text-xl font-bold">dromi</span>
+          </div>
+        </Link>
         <div>
           {/* Links */}
         </div>
