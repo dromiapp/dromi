@@ -1,6 +1,4 @@
 "use client"
-import { useScroll } from "motion/react";
-import { useState, useEffect } from "react";
 import CTA from "~/components/landing/cta";
 import FAQ from "~/components/landing/faq";
 import Footer from "~/components/landing/footer";
