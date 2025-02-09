@@ -25,7 +25,7 @@ export default function SignupPage() {
 
       <div className="flex flex-col gap-2 text-center">
         <p className="text-muted-foreground text-sm">
-          By signing up, you agree to our <Link href={env.NEXT_PUBLIC_SITE_URL + "/terms"} className="text-primary underline">Terms of Service</Link> and <Link href={env.NEXT_PUBLIC_SITE_URL + "/privacy"} className="text-primary underline">Privacy Policy</Link>
+          By signing up, you agree to our <Link href={`${env.NEXT_PUBLIC_SITE_URL}/terms`} className="text-primary underline">Terms of Service</Link> and <Link href={`${env.NEXT_PUBLIC_SITE_URL}/privacy`} className="text-primary underline">Privacy Policy</Link>
         </p>
 
         <p className="text-muted-foreground text-sm">
