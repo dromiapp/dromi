@@ -22,7 +22,4 @@ export default (app: ElysiaApp) =>
 				session: context.session,
 			};
 		},
-		{
-			beforeHandle: userMiddleware,
-		},
 	);
