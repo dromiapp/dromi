@@ -2,10 +2,10 @@
 import CTA from "~/components/landing/cta";
 import FAQ from "~/components/landing/faq";
 import Footer from "~/components/landing/footer";
-import Glow from "~/components/landing/glow";
 import Header from "~/components/landing/header";
 import Hero from "~/components/landing/hero";
 import Particles from "~/components/landing/particles";
+import Glow from "@repo/ui/components/ui/glow";
 
 export default function HomePage() {
   return (
