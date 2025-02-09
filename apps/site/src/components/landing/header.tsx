@@ -1,6 +1,8 @@
 import { Button } from "@repo/ui/components/ui/button";
 import { cn } from "@repo/ui/lib/utils";
 import { ArrowUpRight } from "lucide-react";
+import Link from "next/link";
+import { env } from "~/env";
 
 export default function Header() {
   return (
@@ -25,10 +27,12 @@ export default function Header() {
         </div>
         <div>
           {/* Actions */}
-          <Button variant="dromi">
-            Get started
-            <ArrowUpRight />
-          </Button>
+          <Link href={env.NEXT_PUBLIC_APP_URL}>
+            <Button variant="dromi">
+              Get started
+              <ArrowUpRight />
+            </Button>
+          </Link>
         </div>
       </div>
     </nav>
