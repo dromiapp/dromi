@@ -1,7 +1,7 @@
 import "@repo/ui/globals.css";
 
 import { Raleway } from "next/font/google";
-import { Viewport, type Metadata } from "next";
+import type { Viewport, Metadata } from "next";
 import Providers from "~/components/providers";
 
 export const metadata: Metadata = {
