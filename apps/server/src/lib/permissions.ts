@@ -6,6 +6,8 @@ type PermissionCheck = {
 	required: {
 		resource: Resource;
 		flag: permissionFlag;
+		resourceId?: string;
+		checkWorkspacePermission?: boolean;
 	}[];
 	requireOwner?: boolean;
 };
@@ -15,6 +17,7 @@ type PermissionResult = {
 	flags: {
 		resource: Resource;
 		flags: number;
+		resourceId: string | null;
 	}[];
 };
 
@@ -48,12 +51,32 @@ export async function checkWorkspacePermission({
 			flags: member.permissions.map((p) => ({
 				resource: p.resource,
 				flags: p.flags,
+				resourceId: p.resourceId,
 			})),
 		};
 
-	const hasPermission = required.every(({ resource, flag }) => {
-		const permission = member.permissions.find((p) => p.resource === resource);
-		return permission ? (permission.flags & Number(flag)) !== 0 : false;
+	const hasPermission = required.every(({ resource, flag, resourceId, checkWorkspacePermission = true }) => {
+		const specificPermission = resourceId
+			? member.permissions.find(p =>
+				p.resource === resource &&
+				p.resourceId === resourceId
+			)
+			: null;
+
+		if (specificPermission && (specificPermission.flags & Number(flag)) !== 0) {
+			return true;
+		}
+
+		if (checkWorkspacePermission) {
+			const workspacePermission = member.permissions.find(
+				p => p.resource === resource && p.resourceId === null
+			);
+			if (workspacePermission && (workspacePermission.flags & Number(flag)) !== 0) {
+				return true;
+			}
+		}
+
+		return false;
 	});
 
 	return {
@@ -61,6 +84,7 @@ export async function checkWorkspacePermission({
 		flags: member.permissions.map((p) => ({
 			resource: p.resource,
 			flags: p.flags,
+			resourceId: p.resourceId,
 		})),
 	};
 }
