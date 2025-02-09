@@ -40,7 +40,7 @@ export const app = new Elysia({
 	.use(
 		cors({
 			credentials: true,
-			origin: ["http://localhost:3001"],
+			origin: config.NODE_ENV === "production" ? ["https://dromi.app", "https://web.dromi.app"] : ["http://localhost:3001", "http://localhost:3002"],
 			allowedHeaders: "*",
 		}),
 	)
