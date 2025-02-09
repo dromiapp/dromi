@@ -11,10 +11,10 @@ export default function AuthLayout({
 
         {children}
 
-        <div className="absolute top-[30px] blur-[100px] h-32 w-[1050px] -left-12">
+        <div className="absolute top-[30px] blur-[100px] h-32 w-[1050px] -left-12 z-[-1]">
           <Glow />
         </div>
-        <div className="absolute bottom-[30px] blur-[100px] h-32 w-[1050px] -right-12 ">
+        <div className="absolute bottom-[30px] blur-[100px] h-32 w-[1050px] -right-12 z-[-1]">
           <Glow align="right" />
         </div>
       </div>
