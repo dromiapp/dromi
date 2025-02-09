@@ -1,4 +1,4 @@
-import { prisma, Resource, PermissionFlag } from "@repo/db";
+import { prisma, Resource, permissionFlag } from "@repo/db";
 import { Context, StatusMap, error, t } from "elysia";
 import { nanoid } from "~/src/lib/auth";
 import { userMiddleware } from "~/src/middlewares/auth-middleware";
@@ -108,7 +108,7 @@ export default (app: ElysiaApp) =>
         });
 
         const allResources = Object.values(Resource);
-        const allFlags = Object.values(PermissionFlag);
+        const allFlags = Object.values(permissionFlag);
 
         await prisma.permission.createMany({
           data: allResources.map((resource) => ({

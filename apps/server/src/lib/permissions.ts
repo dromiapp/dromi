@@ -1,11 +1,11 @@
-import { prisma, type User, type Resource, PermissionFlag } from "@repo/db";
+import { prisma, type User, type Resource, permissionFlag } from "@repo/db";
 
 type PermissionCheck = {
 	workspaceId: string;
 	userId: string;
 	required: {
 		resource: Resource;
-		flag: PermissionFlag;
+		flag: permissionFlag;
 	}[];
 	requireOwner?: boolean;
 };
@@ -65,8 +65,8 @@ export async function checkWorkspacePermission({
 	};
 }
 
-export function getPermissionFlags(flags: number): PermissionFlag[] {
-	return Object.values(PermissionFlag)
+export function getPermissionFlags(flags: number): permissionFlag[] {
+	return Object.values(permissionFlag)
 		.filter((flag) => typeof flag === "number")
-		.filter((flag) => (flags & flag) !== 0) as PermissionFlag[];
+		.filter((flag) => (flags & flag) !== 0) as permissionFlag[];
 }
