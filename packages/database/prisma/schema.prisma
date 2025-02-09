@@ -120,13 +120,13 @@ enum Priority {
 model Permission {
   id         String   @id
   resource   Resource
-  flags    Int      @default(0)
+  resourceId String?
   flags      Int      @default(0)
   memberId   String
 
   member WorkspaceMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
 
-  @@unique([memberId, resource])
+  @@unique([memberId, resource, resourceId])
 }
 
 model WorkspaceMember {
