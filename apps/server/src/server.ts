@@ -3,7 +3,7 @@ import { cors } from "@elysiajs/cors";
 import { jwt } from "@elysiajs/jwt";
 import { serverTiming } from "@elysiajs/server-timing";
 import { swagger } from "@elysiajs/swagger";
-import { Elysia } from "elysia";
+import { Elysia, type InferContext, t } from "elysia";
 import { autoload } from "elysia-autoload";
 import { oauth2 } from "elysia-oauth2";
 import { config } from "~/src/config.ts";
@@ -40,7 +40,10 @@ export const app = new Elysia({
 	.use(
 		cors({
 			credentials: true,
-			origin: config.NODE_ENV === "production" ? ["https://dromi.app", "https://web.dromi.app"] : ["http://localhost:3001", "http://localhost:3002"],
+			origin:
+				config.NODE_ENV === "production"
+					? ["https://dromi.app", "https://web.dromi.app"]
+					: ["http://localhost:3001", "http://localhost:3002"],
 			allowedHeaders: "*",
 		}),
 	)
@@ -50,3 +53,5 @@ export const app = new Elysia({
 	.use(await autoload());
 
 export type ElysiaApp = typeof app;
+
+export type ServerContext = InferContext<ElysiaApp>;
