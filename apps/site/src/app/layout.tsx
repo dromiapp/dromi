@@ -14,6 +14,12 @@ export const metadata: Metadata = {
     siteName: "Dromi",
     title: "Dromi",
     type: "website",
+    images: [{
+      url: "https://r2.dromi.app/banner.png",
+      width: 960,
+      height: 540,
+      alt: "Dromi banner",
+    }]
   }
 };
 
