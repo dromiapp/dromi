@@ -1,4 +1,3 @@
-import { Algorithm, hash } from "@node-rs/argon2";
 import { prisma } from "@repo/db";
 import { StatusMap, error, t } from "elysia";
 import {
@@ -7,7 +6,6 @@ import {
 	hashPassword,
 	nanoid,
 } from "~/src/lib/auth";
-import { userMiddleware } from "~/src/middlewares/auth-middleware";
 import type { ElysiaApp } from "~/src/server.ts";
 
 export default (app: ElysiaApp) =>
@@ -16,26 +14,14 @@ export default (app: ElysiaApp) =>
 		async (context) => {
 			const user_exists = await prisma.user.findFirst({
 				where: {
-					OR: [
-						{
-							email: context.body.email,
-						},
-						{
-							username: context.body.username,
-						},
-					],
+					email: context.body.email,
 				},
 			});
 
 			if (user_exists) {
-				const message =
-					user_exists.email === context.body.email
-						? "Conflict: Email already in use"
-						: "Conflict: Username already in use";
-
 				return error(StatusMap.Conflict, {
 					success: false,
-					message,
+					message: "Conflict: Email already in use",
 				});
 			}
 
@@ -46,9 +32,7 @@ export default (app: ElysiaApp) =>
 					id: nanoid(),
 					email: context.body.email,
 					password: hashed_password,
-					username:
-						context.body.username ||
-						(context.body.email.split("@")[0] as string),
+					displayName: context.body.displayName,
 				},
 			});
 
@@ -72,12 +56,10 @@ export default (app: ElysiaApp) =>
 					minLength: 3,
 					maxLength: 255,
 				}),
-				username: t.Optional(
-					t.String({
-						minLength: 3,
-						maxLength: 16,
-					}),
-				),
+				displayName: t.String({
+					minLength: 1,
+					maxLength: 16,
+				}),
 				password: t.String({
 					minLength: 8,
 					maxLength: 256,
