@@ -7,6 +7,9 @@
     "lint": "bun x @biomejs/biome check src",
     "lint:fix": "bun lint --write"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.1.7",
     "@elysiajs/cors": "^1.2.0",
@@ -17,7 +20,7 @@
     "@oslojs/crypto": "^1.0.1",
     "@oslojs/encoding": "^1.1.0",
     "@prisma/client": "^6.1.0",
-    "@repo/db": "*",
+    "@repo/db": "workspace:*",
     "@scure/bip39": "^1.5.4",
     "@verrou/core": "^0.5.1",
     "arctic": "^3.0.0",

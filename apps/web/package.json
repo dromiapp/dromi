@@ -15,6 +15,9 @@
     "format:write": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache"
   },
+  "workspaces": [
+    "packages/*"
+  ],
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
     "@repo/openapi-ts": "workspace:*",
