@@ -8,9 +8,11 @@
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
-    "prisma": "^6.3.1"
+    "prisma": "^6.3.1",
+    "prismabox": "^1.1.19"
   },
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./typebox": "./generated/typebox"
   }
 }

@@ -9,6 +9,20 @@ generator client {
   output   = "../generated/client"
 }
 
+generator prismabox {
+  provider = "prismabox"
+  // you can optionally specify the output location. Defaults to ./prismabox
+  output = "../generated/typebox"
+  // if you want, you can customize the imported variable name that is used for the schemes. Defaults to "Type" which is what the standard typebox package offers
+  typeboxImportVariableName = "t"
+  // you also can specify the dependency from which the above import should happen. This is useful if a package re-exports the typebox package and you would like to use that
+  typeboxImportDependencyName = "elysia"
+  // by default the generated schemes do not allow additional properties. You can allow them by setting this to true
+  additionalProperties = true
+  // optionally enable the data model generation. See the data model section below for more info
+  inputModel = true
+}
+
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
