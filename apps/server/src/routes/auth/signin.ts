@@ -51,6 +51,21 @@ export default (app: ElysiaApp) =>
 			};
 		},
 		{
+			detail: {
+				tags: ["auth"],
+				summary: "Sign in",
+				description: "Sign in to the application",
+			},
+			response: {
+				200: t.Object({
+					success: t.Boolean(),
+					message: t.String(),
+				}),
+				400: t.Object({
+					success: t.Boolean(),
+					message: t.String(),
+				}),
+			},
 			body: t.Object({
 				identifier: t.String({
 					minLength: 3,

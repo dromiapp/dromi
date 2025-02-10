@@ -1,4 +1,4 @@
-import { prisma, Resource, permissionFlag } from "@repo/db";
+import { prisma, Resource, permissionFlag, Typebox } from "@repo/db";
 import { Context, StatusMap, error, t } from "elysia";
 import { nanoid } from "~/src/lib/auth";
 import { userMiddleware } from "~/src/middlewares/auth-middleware";
@@ -31,6 +31,8 @@ export default (app: ElysiaApp) =>
 						displayName: true,
 						slug: true,
 						createdAt: true,
+						updatedAt: true,
+						deletedAt: true,
 						_count: {
 							select: {
 								members: true,
@@ -50,6 +52,16 @@ export default (app: ElysiaApp) =>
 										password: true,
 									},
 								},
+							},
+						},
+						todoLists: {
+							select: {
+								id: true,
+								displayName: true,
+								slug: true,
+								createdAt: true,
+								updatedAt: true,
+								deletedAt: true,
 							},
 						},
 					},
@@ -129,37 +141,25 @@ export default (app: ElysiaApp) =>
 				response: {
 					200: t.Object({
 						success: t.Boolean(),
-						workspace: t.Object({
-							id: t.String(),
-							displayName: t.String(),
-							slug: t.String(),
-							createdAt: t.Date(),
-							_count: t.Object({
-								members: t.Number(),
-							}),
-							members: t.Optional(
-								t.Array(
-									t.Object({
-										id: t.String(),
-										isOwner: t.Boolean(),
-										createdAt: t.Date(),
-										updatedAt: t.Date(),
-										user: t.Object({
-											id: t.String(),
-											displayName: t.String(),
-											email: t.String(),
-											createdAt: t.Date(),
-										}),
-									}),
+						workspace: t.Intersect([
+							Typebox.WorkspacePlain,
+							t.Object({
+								_count: t.Object({
+									members: t.Number(),
+								}),
+								todoLists: t.Array(
+									t.Omit(Typebox.TodoListPlain, ["workspaceId"]),
 								),
-							),
-						}),
+							}),
+						]),
 					}),
 					401: t.Object({
 						success: t.Boolean(),
 						message: t.String(),
-						user: t.Nullable(t.Any()),
-						session: t.Nullable(t.Any()),
+						user: t.Optional(
+							t.Nullable(t.Omit(Typebox.UserPlain, ["password"])),
+						),
+						session: t.Optional(t.Nullable(Typebox.SessionPlain)),
 					}),
 					403: t.Object({
 						success: t.Boolean(),
@@ -228,8 +228,10 @@ export default (app: ElysiaApp) =>
 					401: t.Object({
 						success: t.Boolean(),
 						message: t.String(),
-						user: t.Nullable(t.Any()),
-						session: t.Nullable(t.Any()),
+						user: t.Optional(
+							t.Nullable(t.Omit(Typebox.UserPlain, ["password"])),
+						),
+						session: t.Optional(t.Nullable(Typebox.SessionPlain)),
 					}),
 					403: t.Object({
 						success: t.Boolean(),

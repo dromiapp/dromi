@@ -50,9 +50,25 @@ export default (app: ElysiaApp) =>
 			};
 		},
 		{
+			detail: {
+				tags: ["auth"],
+				summary: "Sign up",
+				description: "Create a new account",
+			},
+			response: {
+				200: t.Object({
+					success: t.Boolean(),
+					message: t.String(),
+				}),
+				409: t.Object({
+					success: t.Boolean(),
+					message: t.String(),
+				}),
+			},
 			body: t.Object({
 				email: t.String({
 					format: "email",
+
 					minLength: 3,
 					maxLength: 255,
 				}),

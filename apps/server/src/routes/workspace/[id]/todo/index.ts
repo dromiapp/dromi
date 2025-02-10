@@ -1,4 +1,4 @@
-import { prisma, Resource, permissionFlag, type TodoList } from "@repo/db";
+import { prisma, Resource, permissionFlag, type TodoList, Typebox } from "@repo/db";
 import { Context, StatusMap, error, t } from "elysia";
 import { nanoid } from "~/src/lib/auth";
 import { userMiddleware } from "~/src/middlewares/auth-middleware";
@@ -54,6 +54,8 @@ export default (app: ElysiaApp) =>
 					id: string;
 					displayName: string;
 					slug: string;
+					deletedAt: Date | null;
+					updatedAt: Date;
 					createdAt: Date;
 					_count: { items: number };
 					workspaceId: string;
@@ -67,6 +69,8 @@ export default (app: ElysiaApp) =>
 							displayName: true,
 							slug: true,
 							createdAt: true,
+							updatedAt: true,
+							deletedAt: true,
 							_count: { select: { items: true } },
 							workspaceId: true,
 						},
@@ -93,6 +97,8 @@ export default (app: ElysiaApp) =>
 							displayName: true,
 							slug: true,
 							createdAt: true,
+							updatedAt: true,
+							deletedAt: true,
 							_count: { select: { items: true } },
 							workspaceId: true,
 						},
@@ -118,24 +124,24 @@ export default (app: ElysiaApp) =>
 						success: t.Boolean(),
 						todoLists: t.Nullable(
 							t.Array(
-								t.Object({
-									id: t.String(),
-									displayName: t.String(),
-									slug: t.String(),
-									createdAt: t.Date(),
-									_count: t.Object({
-										items: t.Number(),
-									}),
-									workspaceId: t.String(),
-								}),
+                t.Intersect([
+                  Typebox.TodoListPlain,
+                  t.Object({
+                    _count: t.Object({
+                      items: t.Number(),
+                    }),
+                  }),
+                ])
 							),
 						),
 					}),
 					401: t.Object({
 						success: t.Boolean(),
 						message: t.String(),
-						user: t.Nullable(t.Any()),
-						session: t.Nullable(t.Any()),
+						user: t.Optional(
+							t.Nullable(t.Omit(Typebox.UserPlain, ["password"])),
+						),
+						session: t.Optional(t.Nullable(Typebox.SessionPlain)),
 					}),
 					403: t.Object({
 						success: t.Boolean(),
