@@ -30,11 +30,14 @@ export default (app: ElysiaApp) =>
 					displayName: true,
 					slug: true,
 					createdAt: true,
+					updatedAt: true,
+					deletedAt: true,
 					_count: {
 						select: {
 							items: true,
 						},
 					},
+
 					workspaceId: true,
 				},
 			});
@@ -81,17 +84,16 @@ export default (app: ElysiaApp) =>
 			response: {
 				200: t.Object({
 					success: t.Boolean(),
-					todoList: t.Object({
-						id: t.String(),
-						displayName: t.String(),
-						slug: t.String(),
-						createdAt: t.Date(),
-						_count: t.Object({
-							items: t.Number(),
+					todoList: t.Intersect([
+						Typebox.TodoListPlain,
+						t.Object({
+							_count: t.Object({
+								items: t.Number(),
+							}),
 						}),
-						workspaceId: t.String(),
-					}),
+					]),
 				}),
+
 				401: t.Object({
 					success: t.Boolean(),
 					message: t.String(),
