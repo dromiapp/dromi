@@ -3,6 +3,7 @@ import { cn } from "@repo/ui/lib/utils";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 import { env } from "~/env";
+import DromiLogo from "@repo/ui/components/ui/logo";
 
 export default function Header() {
   return (
@@ -20,7 +21,7 @@ export default function Header() {
         <Link href="/">
           <div className="flex gap-2 items-center select-none">
             {/* Branding */}
-            <img src="https://r2.dromi.app/logo.svg" alt="dromi" className="h-4 w-4" />
+            <DromiLogo size={4} />
             <span className="text-xl font-bold">dromi</span>
           </div>
         </Link>

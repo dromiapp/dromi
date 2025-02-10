@@ -1,13 +1,22 @@
+"use client"
+
 import { Button } from "@repo/ui/components/ui/button";
 import { Input } from "@repo/ui/components/ui/input";
 import { ArrowRight } from "lucide-react";
 import { env } from "~/env";
 import Link from "next/link";
+import DromiLogo from "@repo/ui/components/ui/logo";
+import { motion } from "motion/react";
 
 export default function SigninPage() {
   return (
-    <div className="flex flex-col gap-7 justify-center items-center pt-40 max-w-[400px] mx-auto">
-      <img src="https://r2.dromi.app/logo.svg" alt="dromi" className="h-8 w-8" />
+    <motion.div
+      className="flex flex-col gap-7 justify-center items-center pt-52 max-w-[400px] mx-auto"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      <DromiLogo size={8} />
       <h1 className="text-3xl font-bold">
         Welcome back
       </h1>
@@ -28,6 +37,6 @@ export default function SigninPage() {
           Don't have an account? <Link className="text-primary underline cursor-pointer" href="/auth/signup">Sign up</Link>
         </p>
       </div>
-    </div>
+    </motion.div>
   )
 }
