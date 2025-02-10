@@ -44,7 +44,7 @@ export const app = new Elysia({
 				config.NODE_ENV === "production"
 					? ["https://dromi.app", "https://web.dromi.app"]
 					: ["http://localhost:3001", "http://localhost:3002"],
-			allowedHeaders: "*",
+			allowedHeaders: ["Content-Type", "Authorization"]
 		}),
 	)
 	// .use(jwt({ secret: config.JWT_SECRET }))
