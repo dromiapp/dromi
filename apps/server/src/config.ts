@@ -5,7 +5,6 @@ export const config = {
 		.get("NODE_ENV")
 		.default("development")
 		.asEnum(["production", "test", "development"]),
-
 	PORT: env.get("PORT").default(3000).asPortNumber(),
 	API_URL: env
 		.get("API_URL")

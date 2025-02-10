@@ -1,10 +1,10 @@
-import { prisma, Resource, permissionFlag, Typebox } from "@repo/db";
+import { Resource, Typebox, permissionFlag, prisma } from "@repo/db";
 import { Context, StatusMap, error, t } from "elysia";
 import { nanoid } from "~/src/lib/auth";
-import { userMiddleware } from "~/src/middlewares/auth-middleware";
-import type { ElysiaApp } from "~/src/server.ts";
 import { generatePassphrase } from "~/src/lib/passphrase";
 import { checkWorkspacePermission } from "~/src/lib/permissions";
+import { userMiddleware } from "~/src/middlewares/auth-middleware";
+import type { ElysiaApp } from "~/src/server.ts";
 
 export default (app: ElysiaApp) =>
 	app.get(
@@ -37,7 +37,6 @@ export default (app: ElysiaApp) =>
 							items: true,
 						},
 					},
-
 					workspaceId: true,
 				},
 			});
@@ -93,7 +92,6 @@ export default (app: ElysiaApp) =>
 						}),
 					]),
 				}),
-
 				401: t.Object({
 					success: t.Boolean(),
 					message: t.String(),

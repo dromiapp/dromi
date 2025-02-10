@@ -1,40 +1,38 @@
 {
-  "name": "dromi-server",
-  "type": "module",
-  "scripts": {
-    "dev": "bun --watch src/index.ts",
-    "start": "NODE_ENV=production bun run ./src/index.ts",
-    "lint": "bun x @biomejs/biome check src",
-    "lint:fix": "bun lint --write"
-  },
-  "workspaces": [
-    "packages/*"
-  ],
-  "dependencies": {
-    "@bogeychan/elysia-logger": "^0.1.7",
-    "@elysiajs/cors": "^1.2.0",
-    "@elysiajs/jwt": "^1.2.0",
-    "@elysiajs/server-timing": "^1.2.0",
-    "@elysiajs/swagger": "^1.2.0",
-    "@node-rs/argon2": "^2.0.2",
-    "@oslojs/crypto": "^1.0.1",
-    "@oslojs/encoding": "^1.1.0",
-    "@prisma/client": "^6.1.0",
-    "@repo/db": "workspace:*",
-    "@scure/bip39": "^1.5.4",
-    "@verrou/core": "^0.5.1",
-    "arctic": "^3.0.0",
-    "better-auth": "^1.1.16",
-    "elysia": "^1.2.10",
-    "elysia-autoload": "^1.5.0",
-    "elysia-oauth2": "^2.0.0",
-    "env-var": "^7.5.0",
-    "ioredis": "^5.4.2",
-    "nanoid": "^5.0.9"
-  },
-  "devDependencies": {
-    "typescript": "^5.7.2",
-    "@types/bun": "^1.1.14",
-    "@biomejs/biome": "^1.9.4"
-  }
+	"name": "dromi-server",
+	"type": "module",
+	"scripts": {
+		"dev": "bun --watch src/index.ts",
+		"start": "NODE_ENV=production bun run ./src/index.ts",
+		"lint": "biome check src",
+		"lint:fix": "biome check --write src"
+	},
+	"workspaces": ["packages/*"],
+	"dependencies": {
+		"@bogeychan/elysia-logger": "^0.1.7",
+		"@elysiajs/cors": "^1.2.0",
+		"@elysiajs/jwt": "^1.2.0",
+		"@elysiajs/server-timing": "^1.2.0",
+		"@elysiajs/swagger": "^1.2.0",
+		"@node-rs/argon2": "^2.0.2",
+		"@oslojs/crypto": "^1.0.1",
+		"@oslojs/encoding": "^1.1.0",
+		"@prisma/client": "^6.1.0",
+		"@repo/db": "workspace:*",
+		"@scure/bip39": "^1.5.4",
+		"@verrou/core": "^0.5.1",
+		"arctic": "^3.0.0",
+		"better-auth": "^1.1.16",
+		"elysia": "^1.2.10",
+		"elysia-autoload": "^1.5.0",
+		"elysia-oauth2": "^2.0.0",
+		"env-var": "^7.5.0",
+		"ioredis": "^5.4.2",
+		"nanoid": "^5.0.9"
+	},
+	"devDependencies": {
+		"typescript": "^5.7.2",
+		"@types/bun": "^1.1.14",
+		"@biomejs/biome": "^1.9.4"
+	}
 }

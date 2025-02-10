@@ -1,10 +1,16 @@
-import { prisma, Resource, permissionFlag, type TodoList, Typebox } from "@repo/db";
+import {
+	Resource,
+	type TodoList,
+	Typebox,
+	permissionFlag,
+	prisma,
+} from "@repo/db";
 import { Context, StatusMap, error, t } from "elysia";
 import { nanoid } from "~/src/lib/auth";
-import { userMiddleware } from "~/src/middlewares/auth-middleware";
-import type { ElysiaApp } from "~/src/server.ts";
 import { generatePassphrase } from "~/src/lib/passphrase";
 import { checkWorkspacePermission } from "~/src/lib/permissions";
+import { userMiddleware } from "~/src/middlewares/auth-middleware";
+import type { ElysiaApp } from "~/src/server.ts";
 
 export default (app: ElysiaApp) =>
 	app
@@ -124,14 +130,14 @@ export default (app: ElysiaApp) =>
 						success: t.Boolean(),
 						todoLists: t.Nullable(
 							t.Array(
-                t.Intersect([
-                  Typebox.TodoListPlain,
-                  t.Object({
-                    _count: t.Object({
-                      items: t.Number(),
-                    }),
-                  }),
-                ])
+								t.Intersect([
+									Typebox.TodoListPlain,
+									t.Object({
+										_count: t.Object({
+											items: t.Number(),
+										}),
+									}),
+								]),
 							),
 						),
 					}),
@@ -179,11 +185,12 @@ export default (app: ElysiaApp) =>
 				if (!hasPermission) {
 					return error(StatusMap.Forbidden, {
 						success: false,
-						message: "You do not have permission to create todo lists in this workspace",
+						message:
+							"You do not have permission to create todo lists in this workspace",
 					});
 				}
 
-        const slugOrPassphrase = slug || generatePassphrase();
+				const slugOrPassphrase = slug || generatePassphrase();
 
 				const todoList = await prisma.todoList.create({
 					data: {

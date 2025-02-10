@@ -1,4 +1,4 @@
-import { prisma, type User, type Resource, permissionFlag } from "@repo/db";
+import { type Resource, type User, permissionFlag, prisma } from "@repo/db";
 
 type PermissionCheck = {
 	workspaceId: string;
@@ -55,29 +55,36 @@ export async function checkWorkspacePermission({
 			})),
 		};
 
-	const hasPermission = required.every(({ resource, flag, resourceId, checkWorkspacePermission = true }) => {
-		const specificPermission = resourceId
-			? member.permissions.find(p =>
-				p.resource === resource &&
-				p.resourceId === resourceId
-			)
-			: null;
+	const hasPermission = required.every(
+		({ resource, flag, resourceId, checkWorkspacePermission = true }) => {
+			const specificPermission = resourceId
+				? member.permissions.find(
+						(p) => p.resource === resource && p.resourceId === resourceId,
+					)
+				: null;
 
-		if (specificPermission && (specificPermission.flags & Number(flag)) !== 0) {
-			return true;
-		}
-
-		if (checkWorkspacePermission) {
-			const workspacePermission = member.permissions.find(
-				p => p.resource === resource && p.resourceId === null
-			);
-			if (workspacePermission && (workspacePermission.flags & Number(flag)) !== 0) {
+			if (
+				specificPermission &&
+				(specificPermission.flags & Number(flag)) !== 0
+			) {
 				return true;
 			}
-		}
 
-		return false;
-	});
+			if (checkWorkspacePermission) {
+				const workspacePermission = member.permissions.find(
+					(p) => p.resource === resource && p.resourceId === null,
+				);
+				if (
+					workspacePermission &&
+					(workspacePermission.flags & Number(flag)) !== 0
+				) {
+					return true;
+				}
+			}
+
+			return false;
+		},
+	);
 
 	return {
 		hasPermission,
