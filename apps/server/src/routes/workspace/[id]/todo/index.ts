@@ -28,10 +28,23 @@ export default (app: ElysiaApp) =>
 
 				const { id: workspaceId } = context.params;
 
+				const workspace = await prisma.workspace.findFirst({
+					where: {
+						OR: [{ id: workspaceId }, { slug: workspaceId }],
+					},
+				});
+
+				if (!workspace) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Workspace not found",
+					});
+				}
+
 				// Check workspace-level TODO permission first
 				const { hasPermission, flags } = await checkWorkspacePermission({
 					userId: context.user.id,
-					workspaceId,
+					workspaceId: workspace.id,
 					required: [
 						{
 							flag: permissionFlag.VIEW,
@@ -174,11 +187,24 @@ export default (app: ElysiaApp) =>
 
 				const { id: workspaceId } = context.params;
 
+				const workspace = await prisma.workspace.findFirst({
+					where: {
+						OR: [{ id: workspaceId }, { slug: workspaceId }],
+					},
+				});
+
+				if (!workspace) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Workspace not found",
+					});
+				}
+
 				const { displayName, slug } = context.body;
 
 				const { hasPermission, flags } = await checkWorkspacePermission({
 					userId: context.user.id,
-					workspaceId,
+					workspaceId: workspace.id,
 					required: [{ flag: permissionFlag.CREATE, resource: Resource.TODO }],
 				});
 
