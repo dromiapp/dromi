@@ -10,17 +10,17 @@ generator client {
 }
 
 generator prismabox {
-  provider = "prismabox"
+  provider                    = "prismabox"
   // you can optionally specify the output location. Defaults to ./prismabox
-  output = "../generated/typebox"
+  output                      = "../generated/typebox"
   // if you want, you can customize the imported variable name that is used for the schemes. Defaults to "Type" which is what the standard typebox package offers
-  typeboxImportVariableName = "t"
+  typeboxImportVariableName   = "t"
   // you also can specify the dependency from which the above import should happen. This is useful if a package re-exports the typebox package and you would like to use that
   typeboxImportDependencyName = "elysia"
   // by default the generated schemes do not allow additional properties. You can allow them by setting this to true
-  additionalProperties = true
+  additionalProperties        = true
   // optionally enable the data model generation. See the data model section below for more info
-  inputModel = true
+  inputModel                  = true
 }
 
 datasource db {
@@ -39,8 +39,8 @@ model User {
 
   sessions             Session[]
   workspaceMemberships WorkspaceMember[]
-  createdTodos  TodoItem[] @relation("CreatedTodos")
-  assignedTodos TodoItem[] @relation("AssignedTodos")
+  createdTodos         TodoItem[]        @relation("CreatedTodos")
+  assignedTodos        TodoItem[]        @relation("AssignedTodos")
 }
 
 model Session {
@@ -50,11 +50,6 @@ model Session {
   expiresAt DateTime
 
   user User @relation(references: [id], fields: [userId], onDelete: Cascade)
-}
-
-enum Resource {
-  WORKSPACE
-  TODO
 }
 
 model Workspace {
@@ -78,9 +73,9 @@ model TodoList {
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
 
-  workspace Workspace  @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
-  items    TodoItem[]
-  labels TodoLabel[]
+  workspace Workspace   @relation(fields: [workspaceId], references: [id], onDelete: Cascade)
+  items     TodoItem[]
+  labels    TodoLabel[]
 
   @@unique([workspaceId, slug])
 }
@@ -101,19 +96,19 @@ model TodoItem {
   createdById String
   assigneeId  String?
 
-  list     TodoList       @relation(fields: [listId], references: [id], onDelete: Cascade)
-  creator  User          @relation("CreatedTodos", fields: [createdById], references: [id])
-  assignee User?         @relation("AssignedTodos", fields: [assigneeId], references: [id])
+  list     TodoList    @relation(fields: [listId], references: [id], onDelete: Cascade)
+  creator  User        @relation("CreatedTodos", fields: [createdById], references: [id])
+  assignee User?       @relation("AssignedTodos", fields: [assigneeId], references: [id])
   labels   TodoLabel[]
 }
 
 model TodoLabel {
-  id          String   @id
+  id          String  @id
   name        String
   description String?
-  listId      String   // Labels belong to a specific list
+  listId      String
 
-  list  TodoList    @relation(fields: [listId], references: [id], onDelete: Cascade)
+  list  TodoList   @relation(fields: [listId], references: [id], onDelete: Cascade)
   items TodoItem[]
 
   @@unique([listId, name])
@@ -131,10 +126,15 @@ enum Priority {
   URGENT
 }
 
+enum Resource {
+  WORKSPACE
+  TODO
+}
+
 model Permission {
   id         String   @id
   resource   Resource
-  resourceId String?
+  resourceId String? // Id of the resource if it's not a workspace
   flags      Int      @default(0)
   memberId   String
 
