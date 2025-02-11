@@ -1,7 +1,5 @@
-import { prisma } from "@repo/db";
 import { Typebox } from "@repo/db";
-import { Context, StatusMap, error, t } from "elysia";
-import { userMiddleware } from "~/src/middlewares/auth-middleware";
+import { StatusMap, error, t } from "elysia";
 import type { ElysiaApp } from "~/src/server.ts";
 
 export default (app: ElysiaApp) =>

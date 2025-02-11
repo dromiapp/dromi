@@ -4,8 +4,8 @@ import {
 	createSession,
 	generateSessionToken,
 	hashPassword,
-	nanoid,
 } from "~/src/lib/auth";
+import { generateId } from "~/src/lib/db";
 import type { ElysiaApp } from "~/src/server.ts";
 
 export default (app: ElysiaApp) =>
@@ -29,7 +29,7 @@ export default (app: ElysiaApp) =>
 
 			const new_user = await prisma.user.create({
 				data: {
-					id: nanoid(),
+					id: generateId(),
 					email: context.body.email,
 					password: hashed_password,
 					displayName: context.body.displayName,

@@ -1,15 +1,8 @@
-import {
-	Resource,
-	type TodoList,
-	Typebox,
-	permissionFlag,
-	prisma,
-} from "@repo/db";
-import { Context, StatusMap, error, t } from "elysia";
-import { nanoid } from "~/src/lib/auth";
+import { Resource, Typebox, permissionFlag, prisma } from "@repo/db";
+import { StatusMap, error, t } from "elysia";
+import { generateId } from "~/src/lib/db";
 import { generatePassphrase } from "~/src/lib/passphrase";
 import { checkWorkspacePermission } from "~/src/lib/permissions";
-import { userMiddleware } from "~/src/middlewares/auth-middleware";
 import type { ElysiaApp } from "~/src/server.ts";
 
 export default (app: ElysiaApp) =>
@@ -220,7 +213,7 @@ export default (app: ElysiaApp) =>
 
 				const todoList = await prisma.todoList.create({
 					data: {
-						id: nanoid(),
+						id: generateId(),
 						displayName: displayName || "Untitled List",
 						slug: slugOrPassphrase,
 						workspaceId,
@@ -257,6 +250,10 @@ export default (app: ElysiaApp) =>
 						session: t.Nullable(t.Any()),
 					}),
 					403: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+					}),
+					404: t.Object({
 						success: t.Boolean(),
 						message: t.String(),
 					}),

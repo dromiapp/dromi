@@ -1,9 +1,7 @@
 import { Resource, Typebox, permissionFlag, prisma } from "@repo/db";
-import { Context, StatusMap, error, t } from "elysia";
-import { nanoid } from "~/src/lib/auth";
+import { StatusMap, error, t } from "elysia";
+import { generateId } from "~/src/lib/db";
 import { generatePassphrase } from "~/src/lib/passphrase";
-import { checkWorkspacePermission } from "~/src/lib/permissions";
-import { userMiddleware } from "~/src/middlewares/auth-middleware";
 import type { ElysiaApp } from "~/src/server.ts";
 
 export default (app: ElysiaApp) =>
@@ -97,7 +95,7 @@ export default (app: ElysiaApp) =>
 
 				const workspace = await prisma.workspace.create({
 					data: {
-						id: nanoid(),
+						id: generateId(),
 						displayName: displayName || "Untitled Workspace",
 						slug: slugOrPassphrase,
 					},
@@ -105,7 +103,7 @@ export default (app: ElysiaApp) =>
 
 				const member = await prisma.workspaceMember.create({
 					data: {
-						id: nanoid(),
+						id: generateId(),
 						workspaceId: workspace.id,
 						userId: context.user.id,
 						isOwner: true,
@@ -117,7 +115,7 @@ export default (app: ElysiaApp) =>
 
 				await prisma.permission.createMany({
 					data: allResources.map((resource) => ({
-						id: nanoid(),
+						id: generateId(),
 						resource,
 						flags: allFlags.reduce((acc, flag) => acc | Number(flag), 0),
 						memberId: member.id,

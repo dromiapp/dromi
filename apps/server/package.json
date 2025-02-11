@@ -28,7 +28,8 @@
 		"elysia-oauth2": "^2.0.0",
 		"env-var": "^7.5.0",
 		"ioredis": "^5.4.2",
-		"nanoid": "^5.0.9"
+		"nanoid": "^5.0.9",
+		"uuid": "^11.0.5"
 	},
 	"devDependencies": {
 		"typescript": "^5.7.2",

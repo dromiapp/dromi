@@ -1,5 +1,5 @@
 import { prisma } from "@repo/db";
-import { Context, StatusMap, error, t } from "elysia";
+import { StatusMap, error, t } from "elysia";
 import {
 	createSession,
 	generateSessionToken,

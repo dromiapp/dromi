@@ -1,9 +1,6 @@
 import { Resource, Typebox, permissionFlag, prisma } from "@repo/db";
-import { Context, StatusMap, error, t } from "elysia";
-import { nanoid } from "~/src/lib/auth";
-import { generatePassphrase } from "~/src/lib/passphrase";
+import { StatusMap, error, t } from "elysia";
 import { checkWorkspacePermission } from "~/src/lib/permissions";
-import { userMiddleware } from "~/src/middlewares/auth-middleware";
 import type { ElysiaApp } from "~/src/server.ts";
 
 export default (app: ElysiaApp) =>
