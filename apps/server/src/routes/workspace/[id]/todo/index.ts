@@ -75,7 +75,7 @@ export default (app: ElysiaApp) =>
 				if (hasWorkspacePermission) {
 					// User can access all todo lists in the workspace
 					todoLists = await prisma.todoList.findMany({
-						where: { workspaceId },
+						where: { workspaceId: workspace.id, },
 						select: {
 							id: true,
 							displayName: true,
@@ -101,7 +101,7 @@ export default (app: ElysiaApp) =>
 
 					todoLists = await prisma.todoList.findMany({
 						where: {
-							workspaceId,
+							workspaceId: workspace.id,
 							id: { in: permittedListIds },
 						},
 						select: {
@@ -216,7 +216,7 @@ export default (app: ElysiaApp) =>
 						id: generateId(),
 						displayName: displayName || "Untitled List",
 						slug: slugOrPassphrase,
-						workspaceId,
+						workspaceId: workspace.id,
 					},
 				});
 
