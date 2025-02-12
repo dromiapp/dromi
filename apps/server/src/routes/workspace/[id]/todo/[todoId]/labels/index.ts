@@ -19,10 +19,26 @@ export default (app: ElysiaApp) =>
 
 			const { id: workspaceId, todoId } = context.params;
 
+			const workspace = await prisma.workspace.findFirst({
+				where: {
+					id: workspaceId,
+				},
+				select: {
+					id: true,
+				},
+			});
+
+			if (!workspace) {
+				return error(StatusMap["Not Found"], {
+					success: false,
+					message: "Workspace not found",
+				});
+			}
+
 			const todoList = await prisma.todoList.findFirst({
 				where: {
 					OR: [{ id: todoId }, { slug: todoId }],
-					workspaceId: workspaceId,
+					workspaceId: workspace.id,
 				},
 				select: {
 					id: true,
@@ -104,362 +120,401 @@ export default (app: ElysiaApp) =>
 			},
 		},
 	)
-	.post(
-		"",
-		async (context) => {
-			if (!context.user || !context.session) {
-				return error(StatusMap.Unauthorized, {
-					success: false,
-					message: "Unauthorized Access: User or Session is missing",
-					user: context.user,
-					session: context.session,
-				});
-			}
+		.post(
+			"",
+			async (context) => {
+				if (!context.user || !context.session) {
+					return error(StatusMap.Unauthorized, {
+						success: false,
+						message: "Unauthorized Access: User or Session is missing",
+						user: context.user,
+						session: context.session,
+					});
+				}
 
-			const { id: workspaceId, todoId } = context.params;
+				const { id: workspaceId, todoId } = context.params;
 
-			const todoList = await prisma.todoList.findFirst({
-				where: {
-					OR: [{ id: todoId }, { slug: todoId }],
-					workspaceId: workspaceId,
-				},
-				select: {
-					id: true,
-					workspaceId: true,
-				},
-			});
-
-			if (!todoList) {
-				return error(StatusMap["Not Found"], {
-					success: false,
-					message: "Todo list not found",
-				});
-			}
-
-			const { hasPermission } = await checkWorkspacePermission({
-				userId: context.user.id,
-				workspaceId: todoList.workspaceId,
-				required: [
-					{
-						flag: permissionFlag.EDIT,
-						resourceId: todoList.id,
-						resource: Resource.TODO,
+				const workspace = await prisma.workspace.findFirst({
+					where: {
+						OR: [{ id: workspaceId }, { slug: workspaceId }],
 					},
-				],
-			});
-
-			if (!hasPermission) {
-				return error(StatusMap.Forbidden, {
-					success: false,
-					message: "You do not have permission to edit todo lists",
 				});
-			}
 
-			const { name, description } = context.body;
+				if (!workspace) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Workspace not found",
+					});
+				}
 
-			const label = await prisma.todoLabel.create({
-				data: {
-					id: generateId(),
-					name,
-					description,
-					list: {
-						connect: { id: todoList.id },
+				const todoList = await prisma.todoList.findFirst({
+					where: {
+						OR: [{ id: todoId }, { slug: todoId }],
+						workspaceId: workspace.id,
 					},
-				},
-			});
-
-			if (!label) {
-				return error(StatusMap["Internal Server Error"], {
-					success: false,
-					message: "Failed to create todo label",
-				});
-			}
-
-			return {
-				success: true,
-				label: label,
-			};
-		},
-		{
-			params: t.Object({
-				id: t.String(),
-				todoId: t.String(),
-			}),
-			body: t.Object({
-				name: t.String(),
-				description: t.Optional(t.String()),
-			}),
-			detail: {
-				tags: ["todo/[todoId]"],
-				summary: "Create todo label",
-				description: "Create a label in a todo list",
-			},
-			response: {
-				200: t.Object({
-					success: t.Boolean(),
-					label: Typebox.TodoLabelPlain,
-				}),
-				401: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
-					user: t.Optional(t.Nullable(t.Omit(Typebox.UserPlain, ["password"]))),
-					session: t.Optional(t.Nullable(Typebox.SessionPlain)),
-				}),
-				403: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
-				}),
-				404: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
-				}),
-				500: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
-				}),
-			},
-		},
-	)
-	.put(
-		"/:labelId",
-		async (context) => {
-			if (!context.user || !context.session) {
-				return error(StatusMap.Unauthorized, {
-					success: false,
-					message: "Unauthorized Access: User or Session is missing",
-					user: context.user,
-					session: context.session,
-				});
-			}
-
-			const { id: workspaceId, todoId, labelId } = context.params;
-
-			const todoList = await prisma.todoList.findFirst({
-				where: {
-					OR: [{ id: todoId }, { slug: todoId }],
-					workspaceId: workspaceId,
-				},
-				select: {
-					id: true,
-					workspaceId: true,
-				},
-			});
-
-			if (!todoList) {
-				return error(StatusMap["Not Found"], {
-					success: false,
-					message: "Todo list not found",
-				});
-			}
-
-			const label = await prisma.todoLabel.findFirst({
-				where: {
-					id: labelId,
-					listId: todoList.id,
-				},
-			});
-
-			if (!label) {
-				return error(StatusMap["Not Found"], {
-					success: false,
-					message: "Todo label not found",
-				});
-			}
-
-			const { hasPermission } = await checkWorkspacePermission({
-				userId: context.user.id,
-				workspaceId: todoList.workspaceId,
-				required: [
-					{
-						flag: permissionFlag.EDIT,
-						resourceId: todoList.id,
-						resource: Resource.TODO,
+					select: {
+						id: true,
+						workspaceId: true,
 					},
-				],
-			});
-
-			if (!hasPermission) {
-				return error(StatusMap.Forbidden, {
-					success: false,
-					message: "You do not have permission to edit todo lists",
 				});
-			}
 
-			const { name, description } = context.body;
+				if (!todoList) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Todo list not found",
+					});
+				}
 
-			const updatedLabel = await prisma.todoLabel.update({
-				where: { id: labelId },
-				data: { name, description },
-			});
-
-			if (!updatedLabel) {
-				return error(StatusMap["Internal Server Error"], {
-					success: false,
-					message: "Failed to update todo label",
+				const { hasPermission } = await checkWorkspacePermission({
+					userId: context.user.id,
+					workspaceId: todoList.workspaceId,
+					required: [
+						{
+							flag: permissionFlag.EDIT,
+							resourceId: todoList.id,
+							resource: Resource.TODO,
+						},
+					],
 				});
-			}
 
-			return {
-				success: true,
-				label: updatedLabel,
-			};
-		},
-		{
-			params: t.Object({
-				id: t.String(),
-				todoId: t.String(),
-				labelId: t.String(),
-			}),
-			body: t.Object({
-				name: t.String(),
-				description: t.Optional(t.String()),
-			}),
-			detail: {
-				tags: ["todo/[todoId]"],
-				summary: "Update todo label",
-				description: "Update a label in a todo list",
-			},
-			response: {
-				200: t.Object({
-					success: t.Boolean(),
-					label: Typebox.TodoLabelPlain,
-				}),
-				401: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
-					user: t.Optional(t.Nullable(t.Omit(Typebox.UserPlain, ["password"]))),
-					session: t.Optional(t.Nullable(Typebox.SessionPlain)),
-				}),
-				403: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
-				}),
-				404: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
-				}),
-				500: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
-				}),
-			},
-		},
-	)
-	.delete(
-		"/:labelId",
-		async (context) => {
-			if (!context.user || !context.session) {
-				return error(StatusMap.Unauthorized, {
-					success: false,
-					message: "Unauthorized Access: User or Session is missing",
-					user: context.user,
-					session: context.session,
-				});
-			}
+				if (!hasPermission) {
+					return error(StatusMap.Forbidden, {
+						success: false,
+						message: "You do not have permission to edit todo lists",
+					});
+				}
 
-			const { id: workspaceId, todoId, labelId } = context.params;
+				const { name, description } = context.body;
 
-			const todoList = await prisma.todoList.findFirst({
-				where: {
-					OR: [{ id: todoId }, { slug: todoId }],
-					workspaceId: workspaceId,
-				},
-				select: {
-					id: true,
-					workspaceId: true,
-				},
-			});
-
-			if (!todoList) {
-				return error(StatusMap["Not Found"], {
-					success: false,
-					message: "Todo list not found",
-				});
-			}
-
-			const label = await prisma.todoLabel.findFirst({
-				where: {
-					id: labelId,
-					listId: todoList.id,
-				},
-			});
-
-			if (!label) {
-				return error(StatusMap["Not Found"], {
-					success: false,
-					message: "Todo label not found",
-				});
-			}
-
-			const { hasPermission } = await checkWorkspacePermission({
-				userId: context.user.id,
-				workspaceId: todoList.workspaceId,
-				required: [
-					{
-						flag: permissionFlag.EDIT,
-						resourceId: todoList.id,
-						resource: Resource.TODO,
+				const label = await prisma.todoLabel.create({
+					data: {
+						id: generateId(),
+						name,
+						description,
+						list: {
+							connect: { id: todoList.id },
+						},
 					},
-				],
-			});
-
-			if (!hasPermission) {
-				return error(StatusMap.Forbidden, {
-					success: false,
-					message: "You do not have permission to edit todo lists",
 				});
-			}
 
-			const deletedLabel = await prisma.todoLabel.delete({
-				where: { id: labelId },
-			});
+				if (!label) {
+					return error(StatusMap["Internal Server Error"], {
+						success: false,
+						message: "Failed to create todo label",
+					});
+				}
 
-			if (!deletedLabel) {
-				return error(StatusMap["Internal Server Error"], {
-					success: false,
-					message: "Failed to delete todo label",
+				return {
+					success: true,
+					label: label,
+				};
+			},
+			{
+				params: t.Object({
+					id: t.String(),
+					todoId: t.String(),
+				}),
+				body: t.Object({
+					name: t.String(),
+					description: t.Optional(t.String()),
+				}),
+				detail: {
+					tags: ["todo/[todoId]"],
+					summary: "Create todo label",
+					description: "Create a label in a todo list",
+				},
+				response: {
+					200: t.Object({
+						success: t.Boolean(),
+						label: Typebox.TodoLabelPlain,
+					}),
+					401: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+						user: t.Optional(t.Nullable(t.Omit(Typebox.UserPlain, ["password"]))),
+						session: t.Optional(t.Nullable(Typebox.SessionPlain)),
+					}),
+					403: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+					}),
+					404: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+					}),
+					500: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+					}),
+				},
+			},
+		)
+		.put(
+			"/:labelId",
+			async (context) => {
+				if (!context.user || !context.session) {
+					return error(StatusMap.Unauthorized, {
+						success: false,
+						message: "Unauthorized Access: User or Session is missing",
+						user: context.user,
+						session: context.session,
+					});
+				}
+
+				const { id: workspaceId, todoId, labelId } = context.params;
+
+				const workspace = await prisma.workspace.findFirst({
+					where: {
+						OR: [{ id: workspaceId }, { slug: workspaceId }],
+					},
 				});
-			}
 
-			return {
-				success: true,
-				message: "Todo label deleted successfully",
-			};
-		},
-		{
-			params: t.Object({
-				id: t.String(),
-				todoId: t.String(),
-				labelId: t.String(),
-			}),
-			detail: {
-				tags: ["todo/[todoId]"],
-				summary: "Delete todo label",
-				description: "Delete a label in a todo list",
+				if (!workspace) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Workspace not found",
+					});
+				}
+
+				const todoList = await prisma.todoList.findFirst({
+					where: {
+						OR: [{ id: todoId }, { slug: todoId }],
+						workspaceId: workspace.id,
+					},
+					select: {
+						id: true,
+						workspaceId: true,
+					},
+				});
+
+				if (!todoList) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Todo list not found",
+					});
+				}
+
+				const label = await prisma.todoLabel.findFirst({
+					where: {
+						id: labelId,
+						listId: todoList.id,
+					},
+				});
+
+				if (!label) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Todo label not found",
+					});
+				}
+
+				const { hasPermission } = await checkWorkspacePermission({
+					userId: context.user.id,
+					workspaceId: todoList.workspaceId,
+					required: [
+						{
+							flag: permissionFlag.EDIT,
+							resourceId: todoList.id,
+							resource: Resource.TODO,
+						},
+					],
+				});
+
+				if (!hasPermission) {
+					return error(StatusMap.Forbidden, {
+						success: false,
+						message: "You do not have permission to edit todo lists",
+					});
+				}
+
+				const { name, description } = context.body;
+
+				const updatedLabel = await prisma.todoLabel.update({
+					where: { id: labelId },
+					data: { name, description },
+				});
+
+				if (!updatedLabel) {
+					return error(StatusMap["Internal Server Error"], {
+						success: false,
+						message: "Failed to update todo label",
+					});
+				}
+
+				return {
+					success: true,
+					label: updatedLabel,
+				};
 			},
-			response: {
-				200: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
+			{
+				params: t.Object({
+					id: t.String(),
+					todoId: t.String(),
+					labelId: t.String(),
 				}),
-				401: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
-					user: t.Optional(t.Nullable(t.Omit(Typebox.UserPlain, ["password"]))),
-					session: t.Optional(t.Nullable(Typebox.SessionPlain)),
+				body: t.Object({
+					name: t.String(),
+					description: t.Optional(t.String()),
 				}),
-				403: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
-				}),
-				404: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
-				}),
-				500: t.Object({
-					success: t.Boolean(),
-					message: t.String(),
-				}),
+				detail: {
+					tags: ["todo/[todoId]"],
+					summary: "Update todo label",
+					description: "Update a label in a todo list",
+				},
+				response: {
+					200: t.Object({
+						success: t.Boolean(),
+						label: Typebox.TodoLabelPlain,
+					}),
+					401: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+						user: t.Optional(t.Nullable(t.Omit(Typebox.UserPlain, ["password"]))),
+						session: t.Optional(t.Nullable(Typebox.SessionPlain)),
+					}),
+					403: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+					}),
+					404: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+					}),
+					500: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+					}),
+				},
 			},
-		},
-	)
+		)
+		.delete(
+			"/:labelId",
+			async (context) => {
+				if (!context.user || !context.session) {
+					return error(StatusMap.Unauthorized, {
+						success: false,
+						message: "Unauthorized Access: User or Session is missing",
+						user: context.user,
+						session: context.session,
+					});
+				}
+
+				const { id: workspaceId, todoId, labelId } = context.params;
+
+				const workspace = await prisma.workspace.findFirst({
+					where: {
+						OR: [{ id: workspaceId }, { slug: workspaceId }],
+					},
+				});
+
+				if (!workspace) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Workspace not found",
+					});
+				}
+
+				const todoList = await prisma.todoList.findFirst({
+					where: {
+						OR: [{ id: todoId }, { slug: todoId }],
+						workspaceId: workspace.id,
+					},
+					select: {
+						id: true,
+						workspaceId: true,
+					},
+				});
+
+				if (!todoList) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Todo list not found",
+					});
+				}
+
+				const label = await prisma.todoLabel.findFirst({
+					where: {
+						id: labelId,
+						listId: todoList.id,
+					},
+				});
+
+				if (!label) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Todo label not found",
+					});
+				}
+
+				const { hasPermission } = await checkWorkspacePermission({
+					userId: context.user.id,
+					workspaceId: todoList.workspaceId,
+					required: [
+						{
+							flag: permissionFlag.EDIT,
+							resourceId: todoList.id,
+							resource: Resource.TODO,
+						},
+					],
+				});
+
+				if (!hasPermission) {
+					return error(StatusMap.Forbidden, {
+						success: false,
+						message: "You do not have permission to edit todo lists",
+					});
+				}
+
+				const deletedLabel = await prisma.todoLabel.delete({
+					where: { id: labelId },
+				});
+
+				if (!deletedLabel) {
+					return error(StatusMap["Internal Server Error"], {
+						success: false,
+						message: "Failed to delete todo label",
+					});
+				}
+
+				return {
+					success: true,
+					message: "Todo label deleted successfully",
+				};
+			},
+			{
+				params: t.Object({
+					id: t.String(),
+					todoId: t.String(),
+					labelId: t.String(),
+				}),
+				detail: {
+					tags: ["todo/[todoId]"],
+					summary: "Delete todo label",
+					description: "Delete a label in a todo list",
+				},
+				response: {
+					200: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+					}),
+					401: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+						user: t.Optional(t.Nullable(t.Omit(Typebox.UserPlain, ["password"]))),
+						session: t.Optional(t.Nullable(Typebox.SessionPlain)),
+					}),
+					403: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+					}),
+					404: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+					}),
+					500: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
+					}),
+				},
+			},
+		)

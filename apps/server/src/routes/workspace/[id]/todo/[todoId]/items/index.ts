@@ -20,10 +20,23 @@ export default (app: ElysiaApp) =>
 
 				const { id: workspaceId, todoId } = context.params;
 
+				const workspace = await prisma.workspace.findFirst({
+					where: {
+						OR: [{ id: workspaceId }, { slug: workspaceId }],
+					},
+				});
+
+				if (!workspace) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Workspace not found",
+					});
+				}
+
 				const todoList = await prisma.todoList.findFirst({
 					where: {
 						OR: [{ id: todoId }, { slug: todoId }],
-						workspaceId: workspaceId,
+						workspaceId: workspace.id,
 					},
 					select: {
 						id: true,
@@ -130,10 +143,23 @@ export default (app: ElysiaApp) =>
 
 				const { id: workspaceId, todoId } = context.params;
 
+				const workspace = await prisma.workspace.findFirst({
+					where: {
+						OR: [{ id: workspaceId }, { slug: workspaceId }],
+					},
+				});
+
+				if (!workspace) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Workspace not found",
+					});
+				}
+
 				const todoList = await prisma.todoList.findFirst({
 					where: {
 						OR: [{ id: todoId }, { slug: todoId }],
-						workspaceId: workspaceId,
+						workspaceId: workspace.id,
 					},
 					select: {
 						id: true,
@@ -262,10 +288,23 @@ export default (app: ElysiaApp) =>
 
 				const { id: workspaceId, todoId, itemId } = context.params;
 
+				const workspace = await prisma.workspace.findFirst({
+					where: {
+						OR: [{ id: workspaceId }, { slug: workspaceId }],
+					},
+				});
+
+				if (!workspace) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Workspace not found",
+					});
+				}
+
 				const todoList = await prisma.todoList.findFirst({
 					where: {
 						OR: [{ id: todoId }, { slug: todoId }],
-						workspaceId: workspaceId,
+						workspaceId: workspace.id,
 					},
 					select: {
 						id: true,
@@ -403,10 +442,23 @@ export default (app: ElysiaApp) =>
 
 				const { id: workspaceId, todoId, itemId } = context.params;
 
+				const workspace = await prisma.workspace.findFirst({
+					where: {
+						OR: [{ id: workspaceId }, { slug: workspaceId }],
+					},
+				});
+
+				if (!workspace) {
+					return error(StatusMap["Not Found"], {
+						success: false,
+						message: "Workspace not found",
+					});
+				}
+
 				const todoList = await prisma.todoList.findFirst({
 					where: {
 						OR: [{ id: todoId }, { slug: todoId }],
-						workspaceId: workspaceId,
+						workspaceId: workspace.id,
 					},
 					select: {
 						id: true,
