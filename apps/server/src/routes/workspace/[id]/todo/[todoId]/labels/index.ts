@@ -21,12 +21,10 @@ export default (app: ElysiaApp) =>
 
 			const workspace = await prisma.workspace.findFirst({
 				where: {
-					id: workspaceId,
-				},
-				select: {
-					id: true,
+					OR: [{ id: workspaceId }, { slug: workspaceId }],
 				},
 			});
+
 
 			if (!workspace) {
 				return error(StatusMap["Not Found"], {
