@@ -16,11 +16,12 @@ export default (app: ElysiaApp) =>
 				});
 			}
 
-			const { id: todoId } = context.params;
+			const { id: workspaceId, todoId } = context.params;
 
 			const todoList = await prisma.todoList.findFirst({
 				where: {
 					OR: [{ id: todoId }, { slug: todoId }],
+					workspaceId: workspaceId,
 				},
 				select: {
 					id: true,
@@ -51,6 +52,7 @@ export default (app: ElysiaApp) =>
 				required: [
 					{
 						flag: permissionFlag.VIEW,
+						resourceId: todoList.id,
 						resource: Resource.TODO,
 					},
 				],
