@@ -18,11 +18,12 @@ export default (app: ElysiaApp) =>
 					});
 				}
 
-				const { id } = context.params;
+				const { id: workspaceId, todoId } = context.params;
 
 				const todoList = await prisma.todoList.findFirst({
 					where: {
-						OR: [{ id: id }, { slug: id }],
+						OR: [{ id: todoId }, { slug: todoId }],
+						workspaceId: workspaceId,
 					},
 					select: {
 						id: true,
@@ -84,9 +85,10 @@ export default (app: ElysiaApp) =>
 			{
 				params: t.Object({
 					id: t.String(),
+					todoId: t.String(),
 				}),
 				detail: {
-					tags: ["todo/[id]"],
+					tags: ["todo/[todoId]"],
 					summary: "Get todo items",
 					description: "Get all todo items in a todo list",
 				},
@@ -126,11 +128,12 @@ export default (app: ElysiaApp) =>
 					});
 				}
 
-				const { id } = context.params;
+				const { id: workspaceId, todoId } = context.params;
 
 				const todoList = await prisma.todoList.findFirst({
 					where: {
-						OR: [{ id: id }, { slug: id }],
+						OR: [{ id: todoId }, { slug: todoId }],
+						workspaceId: workspaceId,
 					},
 					select: {
 						id: true,
@@ -202,6 +205,7 @@ export default (app: ElysiaApp) =>
 			{
 				params: t.Object({
 					id: t.String(),
+					todoId: t.String(),
 				}),
 				body: t.Object({
 					title: t.String(),
@@ -212,7 +216,7 @@ export default (app: ElysiaApp) =>
 					assigneeId: t.Optional(t.String()),
 				}),
 				detail: {
-					tags: ["todo/[id]"],
+					tags: ["todo/[todoId]"],
 					summary: "Create todo item",
 					description: "Create an item in a todo list",
 				},
@@ -256,11 +260,12 @@ export default (app: ElysiaApp) =>
 					});
 				}
 
-				const { id, itemId } = context.params;
+				const { id: workspaceId, todoId, itemId } = context.params;
 
 				const todoList = await prisma.todoList.findFirst({
 					where: {
-						OR: [{ id: id }, { slug: id }],
+						OR: [{ id: todoId }, { slug: todoId }],
+						workspaceId: workspaceId,
 					},
 					select: {
 						id: true,
@@ -340,6 +345,7 @@ export default (app: ElysiaApp) =>
 			{
 				params: t.Object({
 					id: t.String(),
+					todoId: t.String(),
 					itemId: t.String(),
 				}),
 				body: t.Object({
@@ -351,7 +357,7 @@ export default (app: ElysiaApp) =>
 					assigneeId: t.Optional(t.String()),
 				}),
 				detail: {
-					tags: ["todo/[id]"],
+					tags: ["todo/[todoId]"],
 					summary: "Edit todo item",
 					description: "Edit an item in a todo list",
 				},
@@ -395,11 +401,12 @@ export default (app: ElysiaApp) =>
 					});
 				}
 
-				const { id, itemId } = context.params;
+				const { id: workspaceId, todoId, itemId } = context.params;
 
 				const todoList = await prisma.todoList.findFirst({
 					where: {
-						OR: [{ id: id }, { slug: id }],
+						OR: [{ id: todoId }, { slug: todoId }],
+						workspaceId: workspaceId,
 					},
 					select: {
 						id: true,
@@ -468,10 +475,11 @@ export default (app: ElysiaApp) =>
 			{
 				params: t.Object({
 					id: t.String(),
+					todoId: t.String(),
 					itemId: t.String(),
 				}),
 				detail: {
-					tags: ["todo/[id]"],
+					tags: ["todo/[todoId]"],
 					summary: "Delete todo item",
 					description: "Delete an item in a todo list",
 				},

@@ -17,11 +17,12 @@ export default (app: ElysiaApp) =>
 				});
 			}
 
-			const { id } = context.params;
+			const { id: workspaceId, todoId } = context.params;
 
 			const todoList = await prisma.todoList.findFirst({
 				where: {
-					OR: [{ id: id }, { slug: id }],
+					OR: [{ id: todoId }, { slug: todoId }],
+					workspaceId: workspaceId,
 				},
 				select: {
 					id: true,
@@ -38,7 +39,7 @@ export default (app: ElysiaApp) =>
 
 			const { hasPermission } = await checkWorkspacePermission({
 				userId: context.user.id,
-				workspaceId: todoList.workspaceId,
+				workspaceId: workspaceId,
 				required: [
 					{
 						flag: permissionFlag.VIEW,
@@ -74,9 +75,10 @@ export default (app: ElysiaApp) =>
 		{
 			params: t.Object({
 				id: t.String(),
+				todoId: t.String()
 			}),
 			detail: {
-				tags: ["todo/[id]"],
+				tags: ["todo/[todoId]"],
 				summary: "Get todo labels",
 				description: "Get all labels in a todo list",
 			},
@@ -114,11 +116,12 @@ export default (app: ElysiaApp) =>
 				});
 			}
 
-			const { id } = context.params;
+			const { id: workspaceId, todoId } = context.params;
 
 			const todoList = await prisma.todoList.findFirst({
 				where: {
-					OR: [{ id: id }, { slug: id }],
+					OR: [{ id: todoId }, { slug: todoId }],
+					workspaceId: workspaceId,
 				},
 				select: {
 					id: true,
@@ -180,13 +183,14 @@ export default (app: ElysiaApp) =>
 		{
 			params: t.Object({
 				id: t.String(),
+				todoId: t.String(),
 			}),
 			body: t.Object({
 				name: t.String(),
 				description: t.Optional(t.String()),
 			}),
 			detail: {
-				tags: ["todo/[id]"],
+				tags: ["todo/[todoId]"],
 				summary: "Create todo label",
 				description: "Create a label in a todo list",
 			},
@@ -228,11 +232,12 @@ export default (app: ElysiaApp) =>
 				});
 			}
 
-			const { id, labelId } = context.params;
+			const { id: workspaceId, todoId, labelId } = context.params;
 
 			const todoList = await prisma.todoList.findFirst({
 				where: {
-					OR: [{ id: id }, { slug: id }],
+					OR: [{ id: todoId }, { slug: todoId }],
+					workspaceId: workspaceId,
 				},
 				select: {
 					id: true,
@@ -250,6 +255,7 @@ export default (app: ElysiaApp) =>
 			const label = await prisma.todoLabel.findFirst({
 				where: {
 					id: labelId,
+					listId: todoList.id,
 				},
 			});
 
@@ -301,6 +307,7 @@ export default (app: ElysiaApp) =>
 		{
 			params: t.Object({
 				id: t.String(),
+				todoId: t.String(),
 				labelId: t.String(),
 			}),
 			body: t.Object({
@@ -308,7 +315,7 @@ export default (app: ElysiaApp) =>
 				description: t.Optional(t.String()),
 			}),
 			detail: {
-				tags: ["todo/[id]"],
+				tags: ["todo/[todoId]"],
 				summary: "Update todo label",
 				description: "Update a label in a todo list",
 			},
@@ -350,11 +357,12 @@ export default (app: ElysiaApp) =>
 				});
 			}
 
-			const { id, labelId } = context.params;
+			const { id: workspaceId, todoId, labelId } = context.params;
 
 			const todoList = await prisma.todoList.findFirst({
 				where: {
-					OR: [{ id: id }, { slug: id }],
+					OR: [{ id: todoId }, { slug: todoId }],
+					workspaceId: workspaceId,
 				},
 				select: {
 					id: true,
@@ -372,6 +380,7 @@ export default (app: ElysiaApp) =>
 			const label = await prisma.todoLabel.findFirst({
 				where: {
 					id: labelId,
+					listId: todoList.id,
 				},
 			});
 
@@ -420,10 +429,11 @@ export default (app: ElysiaApp) =>
 		{
 			params: t.Object({
 				id: t.String(),
+				todoId: t.String(),
 				labelId: t.String(),
 			}),
 			detail: {
-				tags: ["todo/[id]"],
+				tags: ["todo/[todoId]"],
 				summary: "Delete todo label",
 				description: "Delete a label in a todo list",
 			},
