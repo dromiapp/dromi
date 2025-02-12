@@ -241,7 +241,12 @@ export default (app: ElysiaApp) =>
 				response: {
 					200: t.Object({
 						success: t.Boolean(),
-						todoList: t.Any(),
+						todoList: t.Object({
+							id: t.String(),
+							displayName: t.String(),
+							slug: t.String(),
+							workspaceId: t.String(),
+						}),
 					}),
 					401: t.Object({
 						success: t.Boolean(),
