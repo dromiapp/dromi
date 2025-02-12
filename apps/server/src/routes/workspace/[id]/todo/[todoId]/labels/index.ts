@@ -53,7 +53,7 @@ export default (app: ElysiaApp) =>
 
 			const { hasPermission } = await checkWorkspacePermission({
 				userId: context.user.id,
-				workspaceId: workspaceId,
+				workspaceId: workspace.id,
 				required: [
 					{
 						flag: permissionFlag.VIEW,
