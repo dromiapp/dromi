@@ -7,12 +7,6 @@
       "@repo/ui/*": [
         "./src/*"
       ],
-      "@/components/*": [
-        "./src/components/*"
-      ],
-      "@/lib/*": [
-        "./src/lib/*"
-      ],
     },
   },
   "include": [
