@@ -75,18 +75,37 @@ export default (app: ElysiaApp) =>
 					},
 					select: {
 						assigneeId: true,
-						closedAt: true,
 						createdAt: true,
 						createdById: true,
 						deletedAt: true,
 						description: true,
 						dueDate: true,
 						id: true,
-						priority: true,
-						state: true,
 						title: true,
 						updatedAt: true,
 						listId: true,
+						priority: true,
+						labelValues: {
+							select: {
+								labelValue: {
+									select: {
+										id: true,
+										name: true,
+										color: true,
+										description: true,
+										position: true,
+										labelId: true,
+										label: {
+											select: {
+												id: true,
+												name: true,
+												type: true
+											}
+										}
+									}
+								}
+							}
+						}
 					},
 				});
 
@@ -108,7 +127,18 @@ export default (app: ElysiaApp) =>
 				response: {
 					200: t.Object({
 						success: t.Boolean(),
-						items: t.Array(Typebox.TodoItemPlain),
+						items: t.Array(
+							t.Intersect([
+								Typebox.TodoItemPlain,
+								t.Object({
+									labelValues: t.Array(
+										t.Object({
+											labelValue: Typebox.TodoLabelValuePlain
+										})
+									)
+								})
+							])
+						),
 					}),
 					401: t.Object({
 						success: t.Boolean(),
@@ -193,8 +223,31 @@ export default (app: ElysiaApp) =>
 					});
 				}
 
-				const { title, description, dueDate, priority, state, assigneeId } =
+				const { title, description, dueDate, assigneeId, labelValues } =
 					context.body;
+
+				if (labelValues?.length) {
+					const validLabelValues = await prisma.todoLabelValue.findMany({
+						where: {
+							id: {
+								in: labelValues
+							},
+							label: {
+								listId: todoList.id
+							}
+						},
+						select: {
+							id: true
+						}
+					});
+
+					if (validLabelValues.length !== labelValues.length) {
+						return error(StatusMap["Bad Request"], {
+							success: false,
+							message: "One or more label values are invalid or do not belong to this todo list"
+						});
+					}
+				}
 
 				const item = await prisma.todoItem.create({
 					data: {
@@ -211,9 +264,28 @@ export default (app: ElysiaApp) =>
 						description,
 						...(assigneeId ? { assignee: { connect: { id: assigneeId } } } : {}),
 						...(dueDate ? { dueDate } : {}),
-						...(priority ? { priority } : {}),
-						...(state ? { state } : {}),
+						...(labelValues ? {
+							labelValues: {
+								create: labelValues.map(labelValueId => ({
+									id: generateId(),
+									labelValue: {
+										connect: { id: labelValueId }
+									}
+								}))
+							}
+						} : {}),
 					},
+					include: {
+						labelValues: {
+							include: {
+								labelValue: {
+									include: {
+										label: true
+									}
+								}
+							}
+						}
+					}
 				});
 
 				if (!item) {
@@ -237,9 +309,8 @@ export default (app: ElysiaApp) =>
 					title: t.String(),
 					description: t.Optional(t.String()),
 					dueDate: t.Optional(t.String()),
-					priority: t.Optional(Typebox.Priority),
-					state: t.Optional(Typebox.TodoState),
 					assigneeId: t.Optional(t.String()),
+					labelValues: t.Optional(t.Array(t.String())),
 				}),
 				detail: {
 					tags: ["todo/[todoId]"],
@@ -250,6 +321,10 @@ export default (app: ElysiaApp) =>
 					200: t.Object({
 						success: t.Boolean(),
 						item: Typebox.TodoItemPlain,
+					}),
+					400: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
 					}),
 					401: t.Object({
 						success: t.Boolean(),
@@ -351,8 +426,31 @@ export default (app: ElysiaApp) =>
 					});
 				}
 
-				const { title, description, dueDate, priority, state, assigneeId } =
+				const { title, description, dueDate, assigneeId, labelValues } =
 					context.body;
+
+				if (labelValues?.length) {
+					const validLabelValues = await prisma.todoLabelValue.findMany({
+						where: {
+							id: {
+								in: labelValues
+							},
+							label: {
+								listId: todoList.id
+							}
+						},
+						select: {
+							id: true
+						}
+					});
+
+					if (validLabelValues.length !== labelValues.length) {
+						return error(StatusMap["Bad Request"], {
+							success: false,
+							message: "One or more label values are invalid or do not belong to this todo list"
+						});
+					}
+				}
 
 				const updatedItem = await prisma.todoItem.update({
 					where: {
@@ -363,10 +461,30 @@ export default (app: ElysiaApp) =>
 						...(title ? { title } : {}),
 						...(description ? { description } : {}),
 						...(dueDate ? { dueDate } : {}),
-						...(priority ? { priority } : {}),
-						...(state ? { state } : {}),
 						...(assigneeId ? { assignee: { connect: { id: assigneeId } } } : {}),
+						...(labelValues ? {
+							labelValues: {
+								deleteMany: {},
+								create: labelValues.map(labelValueId => ({
+									id: generateId(),
+									labelValue: {
+										connect: { id: labelValueId }
+									}
+								}))
+							}
+						} : {}),
 					},
+					include: {
+						labelValues: {
+							include: {
+								labelValue: {
+									include: {
+										label: true
+									}
+								}
+							}
+						}
+					}
 				});
 
 				if (!updatedItem) {
@@ -391,9 +509,8 @@ export default (app: ElysiaApp) =>
 					title: t.String(),
 					description: t.Optional(t.String()),
 					dueDate: t.Optional(t.String()),
-					priority: t.Optional(Typebox.Priority),
-					state: t.Optional(Typebox.TodoState),
 					assigneeId: t.Optional(t.String()),
+					labelValues: t.Optional(t.Array(t.String())),
 				}),
 				detail: {
 					tags: ["todo/[todoId]"],
@@ -404,6 +521,10 @@ export default (app: ElysiaApp) =>
 					200: t.Object({
 						success: t.Boolean(),
 						item: Typebox.TodoItemPlain,
+					}),
+					400: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
 					}),
 					401: t.Object({
 						success: t.Boolean(),

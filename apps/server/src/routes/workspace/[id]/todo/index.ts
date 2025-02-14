@@ -1,4 +1,4 @@
-import { Resource, Typebox, permissionFlag, prisma } from "@repo/db";
+import { LabelType, Resource, Typebox, permissionFlag, prisma } from "@repo/db";
 import { StatusMap, error, t } from "elysia";
 import { generateId } from "~/src/lib/db";
 import { generatePassphrase } from "~/src/lib/passphrase";
@@ -217,6 +217,47 @@ export default (app: ElysiaApp) =>
 						displayName: displayName || "Untitled List",
 						slug: slugOrPassphrase,
 						workspaceId: workspace.id,
+					},
+				});
+
+				await prisma.todoLabel.create({
+					data: {
+						id: generateId(),
+						name: "Status",
+						description: "The status of the todo",
+						type: LabelType.SELECT,
+						list: {
+							connect: {
+								id: todoList.id,
+							},
+						},
+						values: {
+							createMany: {
+								data: [
+									{
+										id: generateId(),
+										name: "Not Started",
+										color: "#000000",
+										description: "Ready to be picked up",
+										position: 0,
+									},
+									{
+										id: generateId(),
+										name: "In Progress",
+										color: "#000000",
+										description: "Currently being worked on",
+										position: 1,
+									},
+									{
+										id: generateId(),
+										name: "Completed",
+										color: "#000000",
+										description: "Completed and closed",
+										position: 2,
+									},
+								],
+							},
+						},
 					},
 				});
 

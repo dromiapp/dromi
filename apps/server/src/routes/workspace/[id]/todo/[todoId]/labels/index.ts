@@ -78,6 +78,7 @@ export default (app: ElysiaApp) =>
 					listId: true,
 					description: true,
 					name: true,
+					type: true,
 				},
 			});
 
