@@ -85,33 +85,58 @@ model TodoItem {
   listId      String
   title       String
   description String?
-  state       TodoState @default(OPEN)
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
-  closedAt    DateTime?
   deletedAt   DateTime?
-  priority    Priority  @default(MEDIUM)
   dueDate     DateTime?
 
   createdById String
   assigneeId  String?
 
-  list     TodoList    @relation(fields: [listId], references: [id], onDelete: Cascade)
-  creator  User        @relation("CreatedTodos", fields: [createdById], references: [id])
-  assignee User?       @relation("AssignedTodos", fields: [assigneeId], references: [id])
-  labels   TodoLabel[]
+  list      TodoList           @relation(fields: [listId], references: [id], onDelete: Cascade)
+  creator   User              @relation("CreatedTodos", fields: [createdById], references: [id])
+  assignee  User?             @relation("AssignedTodos", fields: [assigneeId], references: [id])
+  labelValues TodoItemLabelValue[]
 }
 
 model TodoLabel {
-  id          String  @id
+  id          String    @id
   name        String
   description String?
-  listId      String
 
-  list  TodoList   @relation(fields: [listId], references: [id], onDelete: Cascade)
-  items TodoItem[]
+  listId      String
+  type        LabelType @default(SELECT)
+
+  list       TodoList          @relation(fields: [listId], references: [id], onDelete: Cascade)
+  values     TodoLabelValue[]
 
   @@unique([listId, name])
+}
+
+model TodoLabelValue {
+  id          String   @id
+  labelId     String
+  name        String
+  color       String
+  description String?
+  position    Int      @default(0)
+
+  label      TodoLabel            @relation(fields: [labelId], references: [id], onDelete: Cascade)
+  items      TodoItemLabelValue[]
+
+  @@unique([labelId, name])
+}
+
+model TodoItemLabelValue {
+  id           String   @id
+  todoId       String
+  labelValueId String
+  createdAt    DateTime @default(now())
+
+  todo        TodoItem       @relation(fields: [todoId], references: [id], onDelete: Cascade)
+  labelValue  TodoLabelValue @relation(fields: [labelValueId], references: [id], onDelete: Cascade)
+
+  @@unique([todoId, labelValueId])
 }
 
 enum TodoState {
@@ -156,4 +181,12 @@ model WorkspaceMember {
   user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([workspaceId, userId])
+}
+
+enum LabelType {
+  TEXT
+  NUMBER
+  DATE
+  SELECT
+  MULTI_SELECT
 }
