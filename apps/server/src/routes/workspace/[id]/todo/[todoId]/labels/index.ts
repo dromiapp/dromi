@@ -1,4 +1,4 @@
-import { Resource, Typebox, permissionFlag, prisma } from "@repo/db";
+import { LabelType, Resource, Typebox, permissionFlag, prisma } from "@repo/db";
 import { StatusMap, error, t } from "elysia";
 import { generateId } from "~/src/lib/db";
 import { checkWorkspacePermission } from "~/src/lib/permissions";
@@ -183,16 +183,39 @@ export default (app: ElysiaApp) =>
 					});
 				}
 
-				const { name, description } = context.body;
+				const { name, description, type = LabelType.SELECT, values } = context.body;
+
+				// Validate values are provided for SELECT types
+				if ((type === LabelType.SELECT || type === LabelType.MULTI_SELECT) && (!values || values.length === 0)) {
+					return error(StatusMap["Bad Request"], {
+						success: false,
+						message: "SELECT type labels must have at least one value",
+					});
+				}
 
 				const label = await prisma.todoLabel.create({
 					data: {
 						id: generateId(),
 						name,
 						description,
+						type,
 						list: {
 							connect: { id: todoList.id },
 						},
+						...(values && {
+							values: {
+								create: values.map((value, index) => ({
+									id: generateId(),
+									name: value.name,
+									color: value.color,
+									description: value.description,
+									position: index,
+								})),
+							},
+						}),
+					},
+					include: {
+						values: true,
 					},
 				});
 
@@ -216,6 +239,12 @@ export default (app: ElysiaApp) =>
 				body: t.Object({
 					name: t.String(),
 					description: t.Optional(t.String()),
+					type: t.Optional(Typebox.LabelType),
+					values: t.Optional(t.Array(t.Object({
+						name: t.String(),
+						color: t.String(),
+						description: t.Optional(t.String()),
+					}))),
 				}),
 				detail: {
 					tags: ["todo/[todoId]"],
@@ -226,6 +255,10 @@ export default (app: ElysiaApp) =>
 					200: t.Object({
 						success: t.Boolean(),
 						label: Typebox.TodoLabelPlain,
+					}),
+					400: t.Object({
+						success: t.Boolean(),
+						message: t.String(),
 					}),
 					401: t.Object({
 						success: t.Boolean(),
