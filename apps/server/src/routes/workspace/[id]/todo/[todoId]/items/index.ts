@@ -110,7 +110,12 @@ export default (app: ElysiaApp) =>
 
 				return {
 					success: true,
-					items: items,
+					items: items.map(item => ({
+						...item,
+						labelValues: item.labelValues.map(labelValue => ({
+							...labelValue.labelValue,
+						}))
+					})),
 				};
 			},
 			{
@@ -131,9 +136,7 @@ export default (app: ElysiaApp) =>
 								Typebox.TodoItemPlain,
 								t.Object({
 									labelValues: t.Array(
-										t.Object({
-											labelValue: Typebox.TodoLabelValuePlain
-										})
+										Typebox.TodoLabelValuePlain
 									)
 								})
 							])
