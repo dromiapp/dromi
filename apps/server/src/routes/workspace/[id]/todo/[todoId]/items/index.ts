@@ -84,7 +84,6 @@ export default (app: ElysiaApp) =>
 						title: true,
 						updatedAt: true,
 						listId: true,
-						priority: true,
 						labelValues: {
 							select: {
 								labelValue: {
@@ -506,7 +505,7 @@ export default (app: ElysiaApp) =>
 					itemId: t.String(),
 				}),
 				body: t.Object({
-					title: t.String(),
+					title: t.Optional(t.String()),
 					description: t.Optional(t.String()),
 					dueDate: t.Optional(t.String()),
 					assigneeId: t.Optional(t.String()),

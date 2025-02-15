@@ -79,6 +79,7 @@ export default (app: ElysiaApp) =>
 					description: true,
 					name: true,
 					type: true,
+					values: true,
 				},
 			});
 
@@ -100,7 +101,10 @@ export default (app: ElysiaApp) =>
 			response: {
 				200: t.Object({
 					success: t.Boolean(),
-					labels: t.Array(Typebox.TodoLabelPlain),
+					labels: t.Array(t.Intersect([
+						Typebox.TodoLabelPlain,
+						t.Omit(Typebox.TodoLabelRelations, ["list"])
+					])),
 				}),
 				401: t.Object({
 					success: t.Boolean(),
