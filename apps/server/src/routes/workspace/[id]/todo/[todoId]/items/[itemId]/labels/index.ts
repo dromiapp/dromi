@@ -100,5 +100,10 @@ export default (app: ElysiaApp) =>
           message: t.String(),
         }),
       },
+      detail: {
+        tags: ["todo/[todoId]/items/[itemId]/labels"],
+        summary: "Add a label to a todo item",
+        description: "Add a label to a todo item",
+      },
     },
   );
