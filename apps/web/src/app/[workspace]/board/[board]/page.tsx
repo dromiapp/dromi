@@ -1,10 +1,9 @@
 "use client"
 
-import { Loader2, Settings } from "lucide-react";
+import { ClipboardX, Loader2, Settings } from "lucide-react";
 import { useParams } from "next/navigation";
-import api, { fetchClient } from "~/lib/api";
+import api from "~/lib/api";
 import { Button } from "@repo/ui/components/ui/button";
-import { useQueryClient } from "@tanstack/react-query";
 import BoardGroup from "~/components/ui/boards/group";
 import { useMemo } from "react";
 
@@ -16,7 +15,6 @@ export default function Board({
   params
 }: BoardProps) {
   const { workspace, board: boardName } = useParams();
-  const queryClient = useQueryClient();
 
   const boardParams = {
     params: {
@@ -62,16 +60,18 @@ export default function Board({
     return boardLabels?.find((label) => label.id);
   }, [boardLabels]);
 
-  if (isLoading) return (
-    <>
-      <div className="flex flex-col items-center justify-center h-screen">
-        <Loader2 className="animate-spin" />
-      </div>
-    </>
+  if (isLoading && !isError) return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <Loader2 className="animate-spin" />
+    </div>
   )
 
-  // TODO: more graceful error handling
-  if (!board) return <>Board not found</>;
+  if (!board || isError) return (
+    <div className="flex flex-col items-center justify-center h-screen space-y-2">
+      <ClipboardX className="h-8 w-8" />
+      <h1 className="text-2xl font-semibold">Board not found</h1>
+    </div>
+  )
 
   return (
     <>
