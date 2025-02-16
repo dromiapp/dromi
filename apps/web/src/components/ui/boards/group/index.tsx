@@ -3,7 +3,9 @@ import BoardItem from "../item";
 import { useState } from "react";
 import { cn } from "@repo/ui/lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import api from "~/lib/api";
+import api, { fetchClient } from "~/lib/api";
+import { Button } from "@repo/ui/components/ui/button";
+import { Plus } from "lucide-react";
 
 interface GroupProps {
   group: any,
@@ -79,30 +81,54 @@ export default function BoardGroup({
     }
   };
 
+  const newItem = (groupId?: string) => {
+    fetchClient.POST("/workspace/{id}/todo/{todoId}/items", {
+      params: {
+        path: {
+          id: boardParams.params.path.id,
+          todoId: boardParams.params.path.todoId,
+        }
+      },
+      body: {
+        title: "New Item",
+        description: "",
+        dueDate: "",
+        assigneeId: "",
+        labelValues: groupId ? [groupId] : [],
+      }
+    }).then((res) => {
+      queryClient.invalidateQueries({
+        queryKey: ["get", "/workspace/{id}/todo/{todoId}/items"],
+      }).then(() => setActive(false))
+    })
+  }
+
   return (
     <>
       <div
-        className="h-full w-[325px]"
+        className="h-full min-w-[325px]"
         onDragOver={onDragOver}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
       >
         {items && (
-          <Card className={cn("h-full w-full", active && "bg-primary-focus/70")}>
+          <Card className="min-h-full flex flex-col overflow-hidden">
             <CardHeader>
-              <CardTitle>
-                {title}
-              </CardTitle>
-              {description && (
-                <CardDescription>
-                  {description}
-                </CardDescription>
-              )}
+              <CardTitle>{title}</CardTitle>
+              {description && <CardDescription>{description}</CardDescription>}
             </CardHeader>
-            <CardContent className="h-full flex flex-col gap-2">
-              {items.map((item) => (
-                <BoardItem key={item.id} item={item} onDragStart={onDragStart} />
-              ))}
+            <CardContent className="flex flex-col flex-1 min-h-0 overflow-hidden">
+              <div className="flex-1 min-h-0 overflow-y-auto flex flex-col gap-2">
+                {items.map((item) => (
+                  <BoardItem key={item.id} item={item} onDragStart={onDragStart} />
+                ))}
+              </div>
+              <div>
+                <Button variant="ghost" className="w-full justify-start" onClick={() => newItem(group.id)}>
+                  <Plus className="h-4 w-4" />
+                  Add item
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
