@@ -41,8 +41,7 @@ export function AppSidebar({
     }).then((res) => {
       queryClient.invalidateQueries({
         queryKey: ["get", "/workspace/{id}/todo"],
-      });
-      redirect(`/${workspace?.slug}/board/${res.data?.todoList?.slug}`)
+      }).then(() => redirect(`/${workspace?.slug}/board/${res.data?.todoList?.slug}`))
     })
   }
 
