@@ -1,11 +1,12 @@
 "use client"
 
-import { ClipboardX, Loader2, Settings } from "lucide-react";
+import { ClipboardX, Columns2, Loader2, Settings } from "lucide-react";
 import { useParams } from "next/navigation";
 import api from "~/lib/api";
 import { Button } from "@repo/ui/components/ui/button";
-import BoardGroup from "~/components/ui/boards/group";
+import BoardGroup from "~/components/boards/group";
 import { useMemo } from "react";
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuGroup, DropdownMenuSub, DropdownMenuSubTrigger, DropdownMenuSubContent, DropdownMenuCheckboxItem } from "@repo/ui/components/ui/dropdown-menu";
 
 interface BoardProps {
   params: Promise<{ workspace: string, board: string }>
@@ -80,13 +81,34 @@ export default function Board({
           <h1 className="text-2xl font-semibold focus-visible:ring-offset-0 focus-visible:ring-0">
             {board?.displayName}
           </h1>
-          <Button size="icon" variant="ghost">
-            <Settings className="h-4 w-4" />
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button size="icon" variant="ghost">
+                <Settings className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56">
+              <DropdownMenuLabel>
+                Board Settings
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuSub>
+                  <DropdownMenuSubTrigger>
+                    <Columns2 className="h-4 w-4" />
+                    Group by
+                  </DropdownMenuSubTrigger>
+                  <DropdownMenuSubContent>
+                    <DropdownMenuCheckboxItem>Status</DropdownMenuCheckboxItem>
+                  </DropdownMenuSubContent>
+                </DropdownMenuSub>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {boardItems && (
-          <div className="flex-auto flex gap-4 items-center h-full">
+          <div className="flex-auto flex gap-4 items-center h-full overflow-x-auto">
             <BoardGroup
               title="Uncategorized"
               items={boardItems?.filter((item) => item.labelValues.length === 0) as any[]}

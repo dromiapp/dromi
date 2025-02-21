@@ -8,7 +8,7 @@ import {
   SidebarHeader, SidebarMenu, SidebarMenuButton
 } from "@repo/ui/components/ui/sidebar";
 import { WorkspaceSwitcher } from "./workspace-switcher";
-import { useBoards } from "~/hooks/use-boards";
+import { useBoards } from "~/hooks/boards/use-boards";
 import { ClipboardList, Home, Plus, PlusIcon } from "lucide-react";
 import { fetchClient } from "~/lib/api";
 import { useQueryClient } from "@tanstack/react-query";

@@ -2,7 +2,7 @@
 
 import { SidebarProvider } from "@repo/ui/components/ui/sidebar"
 import { useParams } from "next/navigation"
-import { AppSidebar } from "~/components/ui/app-sidebar"
+import { AppSidebar } from "~/components/app-sidebar"
 import { useWorkspace } from "~/hooks/use-workspace"
 import SigninPage from "../auth/signin/page"
 import { useUser } from "~/hooks/use-user"
