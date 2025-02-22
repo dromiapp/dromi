@@ -14,7 +14,7 @@ import { fetchClient } from "~/lib/api";
 import { useQueryClient } from "@tanstack/react-query";
 import { Button } from "@repo/ui/components/ui/button";
 import Link from "next/link";
-import { useWorkspace } from "~/hooks/use-workspace";
+import { useWorkspace } from "~/hooks/workspace/use-workspace";
 import { redirect, usePathname } from "next/navigation";
 
 export function AppSidebar({

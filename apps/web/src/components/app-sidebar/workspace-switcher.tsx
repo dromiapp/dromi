@@ -1,19 +1,27 @@
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from "@repo/ui/components/ui/sidebar";
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@repo/ui/components/ui/dropdown-menu";
-import { ChevronsUpDown, Check } from "lucide-react";
-import { useWorkspace } from "~/hooks/use-workspace";
+import { ChevronsUpDown, Check, Loader2 } from "lucide-react";
+import { useWorkspace } from "~/hooks/workspace/use-workspace";
 import { Avatar, AvatarFallback } from "@repo/ui/components/ui/avatar";
+import { useState } from "react";
+import { useWorkspaces } from "~/hooks/workspace/use-workspaces";
+import Link from "next/link";
+import { cn } from "@repo/ui/lib/utils";
 
 export function WorkspaceSwitcher({
   workspaceId
 }: {
   workspaceId: string;
 }) {
-  const { workspace, isLoading, isError } = useWorkspace({ workspace: workspaceId });
+  const [switcherOpen, setSwitcherOpen] = useState(false);
+  const { workspace } = useWorkspace({ workspace: workspaceId });
+  const { workspaces, isLoading } = useWorkspaces({
+    enabled: switcherOpen
+  })
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <DropdownMenu>
+        <DropdownMenu open={switcherOpen} onOpenChange={setSwitcherOpen}>
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
@@ -31,12 +39,38 @@ export function WorkspaceSwitcher({
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            className="w-[--radix-dropdown-menu-trigger-width]"
+            className="w-[--radix-dropdown-menu-trigger-width] flex flex-col space-y-1"
             align="start"
           >
-            <p className="text-sm">
-              Something will eventually be here...
-            </p>
+            {isLoading && (
+              <Loader2 className="animate-spin h-5 w-5 mx-auto" />
+            )}
+            {workspaces?.map((workspace) => {
+              const isActive = workspace.slug === workspaceId || workspace.id === workspaceId;
+              return (
+                <>
+                  <Link href={`/${workspace.slug}`} key={workspace.id}>
+                    <DropdownMenuItem className={cn(
+                      "flex items-center gap-2",
+                      isActive && "bg-sidebar-accent"
+                    )}>
+                      <Avatar className="h-6 w-6">
+                        <AvatarFallback className="text-xs">{workspace.slug[0]?.toUpperCase()}</AvatarFallback>
+                      </Avatar>
+                      <span className="font-semibold">
+                        {workspace?.displayName}
+                      </span>
+
+                      {isActive && (
+                        <div className="ml-auto">
+                          <Check className="h-4 w-4" />
+                        </div>
+                      )}
+                    </DropdownMenuItem>
+                  </Link>
+                </>
+              )
+            })}
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
